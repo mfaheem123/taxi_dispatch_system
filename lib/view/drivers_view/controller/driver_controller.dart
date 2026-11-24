@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:collection/collection.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/drivers_view/driver/login_drivers/driver_login_logout_model.dart';
@@ -2293,6 +2294,9 @@ class DriverController extends GetxController {
     if (listDriverCommission == null) {
       await getCreateDriverCommission();
     }
+    if (subsDiaryModel == null) {
+      await getSubsidiary();
+    }
     final pdf = pw.Document();
     final items = updateDriverCommissionByIdModel
             ?.driverCommission?.driverCommissionLineitems ??
@@ -2306,6 +2310,19 @@ class DriverController extends GetxController {
         return CreateDriverCommission();
       },
     );
+
+    final driver = updateDriverCommissionByIdModel?.driverCommission?.driver;
+    final subId = driver?.subsidiaryId;
+    Subsidiaries? matchedSubsidiary;
+    if (subId != null && subsDiaryModel?.subsidiaries != null) {
+      matchedSubsidiary = subsDiaryModel!.subsidiaries!
+          .firstWhereOrNull((s) => s.id == subId);
+    }
+    final subsidiaryData = matchedSubsidiary ??
+        selectedSubsidiary ??
+        (subsDiaryModel?.subsidiaries?.isNotEmpty ?? false
+            ? subsDiaryModel!.subsidiaries!.first
+            : null);
 
     final primaryColor = PdfColor.fromInt(DynamicColors.primaryClr.value);
 
@@ -2333,9 +2350,9 @@ class DriverController extends GetxController {
                 _buildInfoColumn(
                     "FROM",
                     [
-                      "EMAIL: ${(updateDriverCommissionByIdModel?.driverCommission?.driver?.email ?? "").toUpperCase()}",
-                      "MOBILE: ${selectedDriverData?.mobile ?? ""}",
-                      "TELEPHONE: ${selectedDriverData?.telephone ?? ""}",
+                      "EMAIL: ${(subsidiaryData?.email ?? "").toUpperCase()}",
+                      "MOBILE: ${subsidiaryData?.emergencyContactNumber ?? ""}",
+                      "TELEPHONE: ${subsidiaryData?.telephoneNumber ?? ""}",
                       "",
                       "PERIOD: ($updateFilterFromDate - $updateFilterToDate)",
                     ],
@@ -3183,6 +3200,9 @@ class DriverController extends GetxController {
     if (driverRentModel == null) {
       await getDriver();
     }
+    if (subsDiaryModel == null) {
+      await getSubsidiary();
+    }
     final pdf = pw.Document();
     final items = updateDriverRentByIdModel
         ?.driverRent?.driverRentLineitems ??
@@ -3196,6 +3216,19 @@ class DriverController extends GetxController {
         return CreateDriverRent();
       },
     );
+
+    final rentDriver = updateDriverRentByIdModel?.driverRent?.driver;
+    final rentSubId = rentDriver?.subsidiaryId;
+    Subsidiaries? matchedRentSubsidiary;
+    if (rentSubId != null && subsDiaryModel?.subsidiaries != null) {
+      matchedRentSubsidiary = subsDiaryModel!.subsidiaries!
+          .firstWhereOrNull((s) => s.id == rentSubId);
+    }
+    final subsidiaryData = matchedRentSubsidiary ??
+        selectedSubsidiary ??
+        (subsDiaryModel?.subsidiaries?.isNotEmpty ?? false
+            ? subsDiaryModel!.subsidiaries!.first
+            : null);
 
     final primaryColor = PdfColor.fromInt(DynamicColors.primaryClr.value);
 
@@ -3223,9 +3256,9 @@ class DriverController extends GetxController {
                 _buildInfoRentColumn(
                     "FROM",
                     [
-                      "EMAIL: ${(updateDriverRentByIdModel?.driverRent?.driver?.email ?? "").toUpperCase()}",
-                      "MOBILE: ${selectedDriverData?.mobile ?? ""}",
-                      "TELEPHONE: ${selectedDriverData?.telephone ?? ""}",
+                      "EMAIL: ${(subsidiaryData?.email ?? "").toUpperCase()}",
+                      "MOBILE: ${subsidiaryData?.emergencyContactNumber ?? ""}",
+                      "TELEPHONE: ${subsidiaryData?.telephoneNumber ?? ""}",
                       "",
                       "PERIOD: ($updateRentFilterFromDate - $updateRentFilterToDate)",
                     ],
