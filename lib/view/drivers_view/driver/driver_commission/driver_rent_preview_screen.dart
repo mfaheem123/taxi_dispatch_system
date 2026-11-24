@@ -1,99 +1,120 @@
+import 'package:collection/collection.dart';
 import 'package:dashboard_new1/view/drivers_view/controller/driver_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../../../component/color.dart';
+import '../../../../component/networks/api.dart';
 import '../../../../component/textStyle.dart';
+import '../../../administration/model/list_subsDiary.dart';
 import '../../model/update_driver_rent_model.dart' show DriverRent;
-import '../../model/create_driver_rent_model.dart';
 
-
-class DriverRentWindowWrapper extends StatefulWidget {
-  @override
-  _DriverRentWindowWrapperState createState() =>
-      _DriverRentWindowWrapperState();
-}
-
-class _DriverRentWindowWrapperState extends State<DriverRentWindowWrapper> {
-  bool isFullScreen = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Material(
-        color: Colors.transparent,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          // Size toggle logic
-          width: isFullScreen
-              ? MediaQuery.of(context).size.width
-              : MediaQuery.of(context).size.width * 0.8,
-          height: isFullScreen
-              ? MediaQuery.of(context).size.height
-              : MediaQuery.of(context).size.height * 0.85,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius:
-                isFullScreen ? BorderRadius.zero : BorderRadius.circular(10),
-            boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 15)],
-          ),
-          child: Column(
-            children: [
-              Container(
-                height: 40,
-                color: DynamicColors.primaryClr,
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text("",
-                        style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold)),
-                    Row(
-                      children: [
-                        IconButton(
-                          padding: EdgeInsets.zero,
-                          icon: Icon(
-                              isFullScreen
-                                  ? Icons.fullscreen_exit
-                                  : Icons.crop_square,
-                              color: Colors.white,
-                              size: 20),
-                          onPressed: () =>
-                              setState(() => isFullScreen = !isFullScreen),
-                        ),
-                        IconButton(
-                          padding: EdgeInsets.zero,
-                          icon: const Icon(Icons.close,
-                              color: Colors.white, size: 20),
-                          onPressed: () => Get.back(),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(child: DriverRentViewScreen()),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class DriverRentViewScreen extends StatelessWidget {
+class DriverRentViewScreen extends StatefulWidget {
   final DriverRent? rent;
-  const DriverRentViewScreen({super.key, this.rent});
+  final Subsidiaries? subsidiary;
+  const DriverRentViewScreen({super.key, this.rent, this.subsidiary});
 
   @override
-  Widget build(BuildContext context) {
-    final controller =  Get.isRegistered<DriverController>()
+  State<DriverRentViewScreen> createState() => _DriverRentViewScreenState();
+}
+
+class _DriverRentViewScreenState extends State<DriverRentViewScreen> {
+  Subsidiaries? _subsidiary;
+
+  @override
+  void initState() {
+    super.initState();
+    _subsidiary = widget.subsidiary;
+    _fetchSubsidiary();
+  }
+
+  @override
+  void didUpdateWidget(covariant DriverRentViewScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.subsidiary != null && widget.subsidiary != _subsidiary) {
+      setState(() {
+        _subsidiary = widget.subsidiary;
+      });
+    }
+  }
+
+  Future<void> _fetchSubsidiary() async {
+    if (_subsidiary != null) return;
+
+    final controller = Get.isRegistered<DriverController>()
         ? Get.find<DriverController>()
         : null;
 
-    final data = rent ?? controller?.updateDriverRentByIdModel?.driverRent;
+    final data = widget.rent ??
+        controller?.updateDriverRentByIdModel?.driverRent;
+    final subId = data?.driver?.subsidiaryId;
+
+    if (controller != null) {
+      if (controller.subsDiaryModel?.subsidiaries != null &&
+          controller.subsDiaryModel!.subsidiaries!.isNotEmpty) {
+        Subsidiaries? matched;
+        if (subId != null) {
+          matched = controller.subsDiaryModel!.subsidiaries!
+              .firstWhereOrNull((s) => s.id == subId);
+        }
+        matched ??= controller.selectedSubsidiary ??
+            controller.subsDiaryModel!.subsidiaries!.first;
+
+        if (mounted) {
+          setState(() {
+            _subsidiary = matched;
+          });
+        }
+        return;
+      }
+    }
+
+    try {
+      final response = await Api().get('subsidiaries/get', sendCompanyId: true);
+      if (response.statusCode == 200) {
+        final model = SubsDiaryModel.fromJson(response.data);
+        if (model.subsidiaries != null && model.subsidiaries!.isNotEmpty) {
+          Subsidiaries? matched;
+          if (subId != null) {
+            matched = model.subsidiaries!
+                .firstWhereOrNull((s) => s.id == subId);
+          }
+          matched ??= model.subsidiaries!.first;
+
+          if (mounted) {
+            setState(() {
+              _subsidiary = matched;
+            });
+          }
+
+          if (controller != null) {
+            controller.subsDiaryModel = model;
+          }
+        }
+      }
+    } catch (e) {
+      print("Error fetching subsidiary in DriverRentViewScreen: $e");
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = Get.isRegistered<DriverController>()
+        ? Get.find<DriverController>()
+        : null;
+
+    final data = widget.rent ?? controller?.updateDriverRentByIdModel?.driverRent;
     final items = data?.driverRentLineitems ?? [];
+
+    final subsidiaryData = _subsidiary ??
+        (controller != null
+            ? (controller.selectedSubsidiary ??
+                (data?.driver?.subsidiaryId != null
+                    ? controller.subsDiaryModel?.subsidiaries
+                        ?.firstWhereOrNull((s) => s.id == data!.driver!.subsidiaryId)
+                    : null) ??
+                controller.subsDiaryModel?.subsidiaries?.firstOrNull)
+            : null);
 
     final currentDriverId = data?.driver?.id;
 
@@ -174,9 +195,9 @@ class DriverRentViewScreen extends StatelessWidget {
                 Expanded(
                   flex: 5,
                   child: _buildUIInfoColumn("", [
-                    "EMAIL: ${(data?.driver?.email ?? "").toUpperCase()}",
-                    "MOBILE: $mobileNumber",
-                    "TELEPHONE: $telephoneNumber",
+                    "EMAIL: ${(subsidiaryData?.email ?? "").toUpperCase()}",
+                    "MOBILE: ${subsidiaryData?.emergencyContactNumber ?? ""}",
+                    "TELEPHONE: ${subsidiaryData?.telephoneNumber ?? ""}",
                   ]),
                 ),
                 Expanded(
