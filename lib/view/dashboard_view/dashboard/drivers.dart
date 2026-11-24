@@ -148,6 +148,9 @@ class _DriversViewState extends State<DriversView> {
       case "Arrived":
         return "assets/d.png";   // Yellow Car
 
+      case "POB":
+        return "assets/tracking_car.png"; // POB Car
+
       case "On Route":
         return "assets/tracking_car.png";    // Black Car
 
@@ -420,7 +423,7 @@ class _DriversViewState extends State<DriversView> {
                           onTap: () => controller.dropDownShow.value = false,
                           onChanged: (v) {
                             controller.selectSubsidiariesValue = v;
-                            // controller.selectDepartmentData = null;
+                            controller.onSubsidiaryChanged(v?.id);
                             controller.update();
                           },
                         ),
@@ -666,9 +669,10 @@ class _DriversViewState extends State<DriversView> {
                                           color:
                                           driver.bookingStatus == "Accepted"?Colors.orange:
                                           driver.bookingStatus == "Arrived"?Colors.yellow:
+                                          driver.bookingStatus == "POB"?Colors.purple:
                                           driver.bookingStatus == "On Route"?Colors.red:
                                           driver.bookingStatus == "STC"?Colors.blue:
-                                          driver.driverStatus == "On Break"? Colors.red:
+                                          driver.driverStatus == "On Break"? Color(0xFF580404):
                                           driver.driverStatus == "SinBin"? Color(
                                               0xFF6287A6):
                                           Colors.green,

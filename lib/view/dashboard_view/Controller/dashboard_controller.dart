@@ -260,15 +260,98 @@ class DashboardController extends GetxController {
   final FocusNode hideDashboardFocusNode =
       FocusNode(debugLabel: 'HideDashboardButton');
 
-  // Helper method jo URL me company_id attach karega agar sendCompanyId true ho
+  // Helper method jo URL me company_id aur subsidiary_id attach karega agar sendCompanyId true ho
   String _buildSocketUrl(String endpoint, {bool sendCompanyId = false}) {
     String finalUrl = "$socketUrl$endpoint";
+    List<String> queryParams = [];
     if (sendCompanyId) {
-      // Agar pehle se URL me "?" hai to "&" lagayenge, warna "?" lagayenge
-      finalUrl += finalUrl.contains('?') ? "&" : "?";
-      finalUrl += "company_id=$_companyId";
+      queryParams.add("company_id=$_companyId");
+    }
+    if (selectSubsidiariesValue != null && selectSubsidiariesValue!.id != null) {
+      queryParams.add("subsidiary_id=${selectSubsidiariesValue!.id}");
+    }
+    if (queryParams.isNotEmpty) {
+      finalUrl += (finalUrl.contains('?') ? '&' : '?') + queryParams.join('&');
     }
     return finalUrl;
+  }
+
+  void onSubsidiaryChanged(int? subsidiaryId) {
+    getAllOnlineDrivers(subsidiaryId: subsidiaryId);
+    connectToDriverLogin(sendCompanyId: true);
+    connectToBusyDriver(sendCompanyId: true);
+  }
+
+  bool _matchesSelectedSubsidiaryData(DashboardDriverObject driver) {
+    if (selectSubsidiariesValue == null || selectSubsidiariesValue!.id == null) {
+      return true;
+    }
+    if (driver.subsidiaryId == null) return true;
+    return driver.subsidiaryId.toString() == selectSubsidiariesValue!.id.toString();
+  }
+
+  bool _matchesSelectedSubsidiaryMap(Map<String, dynamic> data) {
+    if (selectSubsidiariesValue == null || selectSubsidiariesValue!.id == null) {
+      return true;
+    }
+    final subId = data['subsidiary_id'] ?? data['subsidiaryId'];
+    if (subId == null) return true;
+    return subId.toString() == selectSubsidiariesValue!.id.toString();
+  }
+
+  void upsertOnlineDriver(DashboardDriverObject driver) {
+    if (!_matchesSelectedSubsidiaryData(driver)) return;
+    busyDriversList.removeWhere((e) => e.id.toString() == driver.id.toString());
+    
+    int index = onlineDriversList.indexWhere((e) => e.id.toString() == driver.id.toString());
+    if (index != -1) {
+      onlineDriversList[index] = driver;
+    } else {
+      onlineDriversList.insert(0, driver);
+    }
+
+    if (dashboardAllData?.drivers != null) {
+      int allIndex = dashboardAllData!.drivers!.indexWhere((e) => e.id.toString() == driver.id.toString());
+      if (allIndex != -1) {
+        dashboardAllData!.drivers![allIndex] = driver;
+      } else {
+        dashboardAllData!.drivers!.add(driver);
+      }
+    }
+  }
+
+  void upsertBusyDriver(DashboardDriverObject driver) {
+    if (!_matchesSelectedSubsidiaryData(driver)) return;
+    onlineDriversList.removeWhere((e) => e.id.toString() == driver.id.toString());
+
+    int index = busyDriversList.indexWhere((e) => e.id.toString() == driver.id.toString());
+    if (index != -1) {
+      busyDriversList[index] = driver;
+    } else {
+      busyDriversList.insert(0, driver);
+    }
+
+    if (dashboardAllData?.drivers != null) {
+      int allIndex = dashboardAllData!.drivers!.indexWhere((e) => e.id.toString() == driver.id.toString());
+      if (allIndex != -1) {
+        dashboardAllData!.drivers![allIndex] = driver;
+      } else {
+        dashboardAllData!.drivers!.add(driver);
+      }
+    }
+  }
+
+  void removeDriver(dynamic driverId) {
+    final idStr = driverId?.toString();
+    if (idStr == null) return;
+    onlineDriversList.removeWhere((e) => e.id.toString() == idStr);
+    busyDriversList.removeWhere((e) => e.id.toString() == idStr);
+    if (dashboardAllData?.drivers != null) {
+      dashboardAllData!.drivers!.removeWhere((e) => e.id.toString() == idStr);
+    }
+    if (selectDriverValue?.id?.toString() == idStr) {
+      selectDriverValue = null;
+    }
   }
 
   /// The CLI socket on its own, so a reconnect can close the previous one.
@@ -334,9 +417,6 @@ class DashboardController extends GetxController {
     final url = Uri.parse(_buildSocketUrl("/driver-login", sendCompanyId: sendCompanyId));
     final generation = _socketGeneration;
     try {
-      // Held locally as well as in _channel: by the time onDone runs, _channel
-      // may already point at a different socket, and this is the one whose
-      // entry in _openSockets has to go.
       final channel = WebSocketChannel.connect(url);
       _channel = channel;
       _trackSocket(channel, "Driver login", url);
@@ -344,99 +424,85 @@ class DashboardController extends GetxController {
       channel.stream.listen(
             (message) {
           final data = jsonDecode(message);
+          print("DRIVER LOGIN EVENT => ${data['event']}");
 
-          print(data['event']);
           if (data['event'] == "DRIVER_LOGIN") {
-            final driver = DashboardDriverObject.fromJson(
-              Map<String, dynamic>.from(data['data']),
-            );
-            dashboardAllData!.drivers!.add(driver);
-            onlineDriversList.add(driver);
-            // Show the new driver's pin on the map right away.
-            _scheduleDriverMarkerRefresh();
+            final driverMap = Map<String, dynamic>.from(data['data']);
+            if (_matchesSelectedSubsidiaryMap(driverMap)) {
+              final driver = DashboardDriverObject.fromJson(driverMap);
+              upsertOnlineDriver(driver);
+              _scheduleDriverMarkerRefresh();
+            }
           } else if (data['event'] == "DRIVER_BREAK_STATUS_UPDATE" ||
               data['event'] == "DRIVER_SIN_BIN_STATUS_UPDATE") {
             final driverData = data['data'];
-
-            int index = onlineDriversList.indexWhere(
-                  (e) => e.id.toString() == driverData['id'].toString(),
-            );
-
-            if (index != -1) {
-              onlineDriversList[index].driverStatus = driverData['driver_status'];
-              onlineDriversList[index].bookingStatus = driverData['booking_status'];
-
-              // Agar dashboardAllData.drivers mein bhi update karna ho:
+            final driverId = driverData['id']?.toString();
+            if (driverId != null) {
+              int index = onlineDriversList.indexWhere((e) => e.id.toString() == driverId);
+              if (index != -1) {
+                onlineDriversList[index].driverStatus = driverData['driver_status'];
+                onlineDriversList[index].bookingStatus = driverData['booking_status'];
+              }
               if (dashboardAllData?.drivers != null) {
-                int dashboardIndex = dashboardAllData!.drivers!.indexWhere(
-                      (e) => e.id.toString() == driverData['id'].toString(),
-                );
-                if (dashboardIndex != -1) {
-                  dashboardAllData!.drivers![dashboardIndex].driverStatus = driverData['driver_status'];
-                  dashboardAllData!.drivers![dashboardIndex].bookingStatus = driverData['booking_status'];
+                int dIndex = dashboardAllData!.drivers!.indexWhere((e) => e.id.toString() == driverId);
+                if (dIndex != -1) {
+                  dashboardAllData!.drivers![dIndex].driverStatus = driverData['driver_status'];
+                  dashboardAllData!.drivers![dIndex].bookingStatus = driverData['booking_status'];
                 }
               }
-          // else if (data['event'] == "DRIVER_BREAK_STATUS_UPDATE") {
-          //   final driverData = data['data'];
-          //
-          //   int index = onlineDriversList.indexWhere(
-          //         (e) => e.id.toString() == driverData['id'].toString(),
-          //   );
-          //
-          //   if (index != -1) {
-          //     onlineDriversList[index].driverStatus =
-          //     driverData['driver_status'];
-          //
-          //     onlineDriversList[index].bookingStatus =
-          //     driverData['booking_status'];
-
-              // Status changed → refresh the pin (its car image depends on it).
               _scheduleDriverMarkerRefresh();
             }
-          } else if (data['event'] != "DRIVER_LIST") {
-            int index = onlineDriversList.indexWhere(
-                  (test) =>
-              test.id.toString() == data['data']['driverId'].toString(),
-            );
+          } else if (data['event'] == "DRIVER_BOOKING_STATUS_WEB_UPDATE") {
+            final driverData = data['data'];
+            final driverId = (driverData['id'] ?? driverData['driver_id'] ?? driverData['driverId'])?.toString();
+            final newDriverStatus = driverData['driver_status'];
+            final newBookingStatus = driverData['booking_status'];
 
-            print(dashboardAllData!.drivers!);
-
-            int idd = dashboardAllData!.drivers!.indexWhere(
-                  (test) =>
-              test.id.toString() == data['data']['driverId'].toString(),
-            );
-
-            print(dashboardAllData!.drivers!);
-
-            if (index >= 0) {
-              dashboardAllData!.drivers!.removeAt(idd);
-              onlineDriversList.removeAt(index);
-              selectDriverValue = null;
+            if (driverId != null) {
+              if (newDriverStatus == 'Available' || newDriverStatus == 'SinBin' || newDriverStatus == 'On Break') {
+                int busyIdx = busyDriversList.indexWhere((e) => e.id.toString() == driverId);
+                if (busyIdx != -1) {
+                  final driver = busyDriversList[busyIdx];
+                  driver.driverStatus = newDriverStatus;
+                  driver.bookingStatus = newBookingStatus;
+                  upsertOnlineDriver(driver);
+                } else {
+                  int onlineIdx = onlineDriversList.indexWhere((e) => e.id.toString() == driverId);
+                  if (onlineIdx != -1) {
+                    onlineDriversList[onlineIdx].driverStatus = newDriverStatus;
+                    onlineDriversList[onlineIdx].bookingStatus = newBookingStatus;
+                  }
+                }
+              } else {
+                int onlineIdx = onlineDriversList.indexWhere((e) => e.id.toString() == driverId);
+                if (onlineIdx != -1) {
+                  final driver = onlineDriversList[onlineIdx];
+                  driver.driverStatus = newDriverStatus;
+                  driver.bookingStatus = newBookingStatus;
+                  upsertBusyDriver(driver);
+                } else {
+                  int busyIdx = busyDriversList.indexWhere((e) => e.id.toString() == driverId);
+                  if (busyIdx != -1) {
+                    busyDriversList[busyIdx].driverStatus = newDriverStatus;
+                    busyDriversList[busyIdx].bookingStatus = newBookingStatus;
+                  }
+                }
+              }
+              _scheduleDriverMarkerRefresh();
             }
-            // Driver logged out → drop its pin from the map too.
-            _scheduleDriverMarkerRefresh();
+          } else if (data['event'] == "DRIVER_LOGOUT") {
+            final driverId = (data['data']['driverId'] ?? data['data']['id'])?.toString();
+            if (driverId != null) {
+              removeDriver(driverId);
+              _scheduleDriverMarkerRefresh();
+            }
           }
         },
         onError: (error) => print("Driver login socket error - url: $url - $error"),
         onDone: () {
           print("🔌 Driver login socket disconnected - url: $url");
-          print("Close Code: ${channel.closeCode}");
-          print("Close Reason: ${channel.closeReason}");
-
-          // This one is finished either way - keeping it would make
-          // disposeSockets close a socket that is already gone, and grow the
-          // list by one on every retry.
           _openSockets.remove(channel);
-
-          // Only an unexpected drop deserves a reconnect. After logout the
-          // close was deliberate, and reconnecting would resurrect a listener
-          // that logout just spent the effort to shut down.
           if (_socketsDisposed || generation != _socketGeneration) return;
-
-          // Backed off. A server that refuses the connection makes onDone fire
-          // immediately, so reconnecting from here without a delay is a tight
-          // loop - connect, fail, onDone, connect - that floods the console
-          // and starves the UI until the tab stops responding.
           _driverLoginRetry?.cancel();
           _driverLoginRetry = Timer(_reconnectDelay, () {
             if (_socketsDisposed || generation != _socketGeneration) return;
@@ -463,111 +529,66 @@ class DashboardController extends GetxController {
       channel.stream.listen(
             (message) {
           final data = jsonDecode(message);
-          print("EVENT => ${data['event']}");
-          print("DATA => ${data['data']}");
+          print("DRIVER BUSY EVENT => ${data['event']}");
 
           if (data['event'] == "DRIVER_BOOKING_STATUS_WEB_UPDATE") {
-            // The payload may carry the driver id under any of these keys, and
-            // as a String or an int. Compare as String like every other handler
-            // here does - a raw `==` silently misses when the types differ, so
-            // the status change (Arrived / On Route / STC) never lands and the
-            // row keeps the colour it got when the job was Accepted.
-            final driverId = (data['data']['id'] ??
-                data['data']['driver_id'] ??
-                data['data']['driverId'])
-                ?.toString();
+            final driverData = data['data'];
+            final driverId = (driverData['id'] ?? driverData['driver_id'] ?? driverData['driverId'])?.toString();
+            final newBookingStatus = driverData['booking_status'];
+            final newDriverStatus = driverData['driver_status'];
 
-            final newBookingStatus = data['data']['booking_status'];
-            final newDriverStatus = data['data']['driver_status'];
+            if (driverId != null) {
+              if (newDriverStatus == 'Available' || newDriverStatus == 'SinBin' || newDriverStatus == 'On Break') {
+                int busyIdx = busyDriversList.indexWhere((e) => e.id.toString() == driverId);
+                if (busyIdx != -1) {
+                  final driver = busyDriversList[busyIdx];
+                  driver.driverStatus = newDriverStatus;
+                  driver.bookingStatus = newBookingStatus;
+                  upsertOnlineDriver(driver);
+                }
+              } else {
+                int onlineIdx = onlineDriversList.indexWhere((e) => e.id.toString() == driverId);
+                if (onlineIdx != -1) {
+                  final driver = onlineDriversList[onlineIdx];
+                  driver.driverStatus = newDriverStatus;
+                  driver.bookingStatus = newBookingStatus;
+                  upsertBusyDriver(driver);
+                } else {
+                  int busyIdx = busyDriversList.indexWhere((e) => e.id.toString() == driverId);
+                  if (busyIdx != -1) {
+                    busyDriversList[busyIdx].bookingStatus = newBookingStatus;
+                    busyDriversList[busyIdx].driverStatus = newDriverStatus;
+                  }
+                }
+              }
 
-            final onlineIndex = driverId == null
-                ? -1
-                : onlineDriversList.indexWhere(
-                  (e) => e.id.toString() == driverId,
-            );
-
-            if (onlineIndex != -1) {
-              onlineDriversList[onlineIndex].bookingStatus = newBookingStatus;
-              onlineDriversList[onlineIndex].driverStatus = newDriverStatus;
+              final allIndex = (dashboardAllData?.drivers ?? []).indexWhere((e) => e.id.toString() == driverId);
+              if (allIndex != -1) {
+                dashboardAllData!.drivers![allIndex].bookingStatus = newBookingStatus;
+                dashboardAllData!.drivers![allIndex].driverStatus = newDriverStatus;
+              }
+              _scheduleDriverMarkerRefresh();
             }
-
-            final busyIndex = driverId == null
-                ? -1
-                : busyDriversList.indexWhere(
-                  (e) => e.id.toString() == driverId,
-            );
-
-            if (busyIndex != -1) {
-              busyDriversList[busyIndex].bookingStatus = newBookingStatus;
-              busyDriversList[busyIndex].driverStatus = newDriverStatus;
-            }
-
-            // Keep the master list in sync too, so a rebuild sourced from it
-            // doesn't hand back a stale booking status.
-            final allIndex = driverId == null
-                ? -1
-                : (dashboardAllData?.drivers ?? []).indexWhere(
-                  (e) => e.id.toString() == driverId,
-            );
-
-            if (allIndex != -1) {
-              dashboardAllData!.drivers![allIndex].bookingStatus =
-                  newBookingStatus;
-              dashboardAllData!.drivers![allIndex].driverStatus =
-                  newDriverStatus;
-            }
-
-            if (onlineIndex == -1 && busyIndex == -1) {
-              print(
-                  "BOOKING_STATUS_UPDATE: no driver matched id=$driverId (status=$newBookingStatus)");
-            }
-
-            // Booking status changed → refresh pins (car image depends on it).
-            _scheduleDriverMarkerRefresh();
           } else if (data['event'] == "BUSY_DRIVER_UPDATE") {
-            if (onlineDriversList.any(
-                  (e) => e.id.toString() == data['data']['id'].toString(),
-            )) {
-              onlineDriversList.removeWhere(
-                    (e) => e.id.toString() == data['data']['id'].toString(),
-              );
+            final driverMap = Map<String, dynamic>.from(data['data']);
+            if (_matchesSelectedSubsidiaryMap(driverMap)) {
+              final driver = DashboardDriverObject.fromJson(driverMap);
+              upsertBusyDriver(driver);
+              _scheduleDriverMarkerRefresh();
             }
-
-            if (dashboardAllData!.drivers!.any(
-                  (e) => e.id.toString() == data['data']['id'].toString(),
-            )) {
-              dashboardAllData!.drivers!.removeWhere(
-                    (e) => e.id.toString() == data['data']['id'].toString(),
-              );
-
-              selectDriverValue = null;
+          } else if (data['event'] == "BUSY_DRIVER_REMOVE" || data['event'] == "DRIVER_LOGOUT" || data['event'] == "JOB_COMPLETE" || data['event'] == "RECOVER") {
+            final driverId = (data['data']['id'] ?? data['data']['driverId'])?.toString();
+            if (driverId != null) {
+              removeDriver(driverId);
+              _scheduleDriverMarkerRefresh();
             }
-
-            final driver = DashboardDriverObject.fromJson(
-              Map<String, dynamic>.from(data['data']),
-            );
-
-            busyDriversList.add(driver);
-            _scheduleDriverMarkerRefresh();
-          } else {
-            busyDriversList.removeWhere(
-                  (e) => e.id.toString() == data['data']['id'].toString(),
-            );
-
-            // Busy driver logged out → remove its pin from the map.
-            _scheduleDriverMarkerRefresh();
           }
         },
         onError: (error) => print("Driver busy socket error - url: $url - $error"),
         onDone: () {
           print("🔌 Driver busy socket disconnected - url: $url");
-          print("Close Code: ${channel.closeCode}");
-          print("Close Reason: ${channel.closeReason}");
-
           _openSockets.remove(channel);
-
           if (_socketsDisposed || generation != _socketGeneration) return;
-
           _busyDriverRetry?.cancel();
           _busyDriverRetry = Timer(_reconnectDelay, () {
             if (_socketsDisposed || generation != _socketGeneration) return;
@@ -584,64 +605,49 @@ class DashboardController extends GetxController {
   RxInt timerTick = 0.obs;
   Timer? timer;
 
-  getAllOnlineDrivers() async {
-    var response = await Api().get("drivers/login-busy",sendCompanyId: true,);
+  getAllOnlineDrivers({int? subsidiaryId}) async {
+    int? subId = subsidiaryId ?? selectSubsidiariesValue?.id;
+    Map<String, dynamic> queryParams = {
+      "company_id": _companyId,
+    };
+    if (subId != null) {
+      queryParams["subsidiary_id"] = subId.toString();
+    }
+
+    var response = await Api().get(
+      // "drivers/login-busy",
+      "drivers/login-busy1",
+      queryParameters: queryParams,
+      sendCompanyId: true,
+    );
     if (response.statusCode == 200) {
       print(response.data);
       onlineDriversList.clear();
       busyDriversList.clear();
-      if (response.data['login_drivers'].isNotEmpty) {
-        response.data['login_drivers'].forEach((element) {
-          onlineDriversList.insert(
-              0,
-              DashboardDriverObject(
-                id: element['id'],
-                name: element['name'],
-                username: element['username'],
-                vehicleType: element['vehicle_type'],
-                zone: element['zone'],
-                latitude: element['latitude'],
-                longitude: element['longitude'],
-                bookingStatus: element['booking_status'],
-                sessionStatus: element['session_status'],
-                driverStatus: element['driver_status'],
-                lastLoginAt: element['last_login_at'] != null
-                    ? DateTime.parse(element['last_login_at']).toLocal()
-                    : null,
-              ));
-        });
-      }
+      // if (response.data['login_drivers'] != null && response.data['login_drivers'].isNotEmpty) {
+      //   response.data['login_drivers'].forEach((element) {
+      //     final driver = DashboardDriverObject.fromJson(Map<String, dynamic>.from(element));
+      //     if (subId == null || driver.subsidiaryId == null || driver.subsidiaryId.toString() == subId.toString()) {
+      //       onlineDriversList.add(driver);
+      //     }
+      //   });
+      // }
 
-      if (response.data['busy_drivers'].isNotEmpty) {
-        response.data['busy_drivers'].forEach((element) {
-          busyDriversList.insert(
-              0,
-              DashboardDriverObject(
-                id: element['id'],
-                name: element['name'],
-                username: element['username'],
-                vehicleType: element['vehicle_type'],
-                zone: element['zone'],
-                latitude: element['latitude'],
-                longitude: element['longitude'],
-                bookingStatus: element['booking_status'],
-                sessionStatus: element['session_status'],
-                driverStatus: element['driver_status'],
-                lastLoginAt: element['last_login_at'] != null
-                    ? DateTime.parse(element['last_login_at']).toLocal()
-                    : null,
-              ));
+      // if (response.data['busy_drivers'] != null && response.data['busy_drivers'].isNotEmpty) {
+      //   response.data['busy_drivers'].forEach((element) {
+      //     final driver = DashboardDriverObject.fromJson(Map<String, dynamic>.from(element));
+      //     if (subId == null || driver.subsidiaryId == null || driver.subsidiaryId.toString() == subId.toString()) {
+      //       busyDriversList.add(driver);
+      //     }
+      //   });
+      // }
+      plotAllDriverMarkers(fitCamera: true);
+      if (timer == null) {
+        timer = Timer.periodic(const Duration(seconds: 5), (_) {
+          timerTick.value++;
+          plotAllDriverMarkers(fitCamera: true);
         });
       }
-      // Show every logged-in / busy driver on the map by default — not just
-      // the one picked with right-click > TRACK — and frame them all.
-      plotAllDriverMarkers(fitCamera: true);
-      timer = Timer.periodic(Duration(seconds: 5), (_) {
-        timerTick.value++; // trigger UI update
-        // Re-plot so pins follow drivers as their positions update; keeps
-        // retrying the one-time camera fit until the map is ready.
-        plotAllDriverMarkers(fitCamera: true);
-      });
       update();
     }
   }

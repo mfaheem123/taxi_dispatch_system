@@ -3,10 +3,13 @@ import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
+import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../model/driver_sin_bin_setting_model.dart';
 import '../model/get_driver_sinbin_model.dart';
 
 class DriverSinBinController extends GetxController {
+
+  final _deshboardController = Get.find<DashboardController>();
   // @override
   // void onInit() {
   //   super.onInit();
@@ -134,6 +137,7 @@ class DriverSinBinController extends GetxController {
       BotToast.showText(
           text: isActive ? "YOU ARE IN SINBIN" : "DRIVER REMOVED FROM SINBIN");
       getDriverSinBin();
+      _deshboardController.getAllOnlineDrivers();
     }
 
     isDriverSinBinLoading = false;
