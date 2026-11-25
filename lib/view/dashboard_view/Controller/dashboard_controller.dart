@@ -437,19 +437,42 @@ class DashboardController extends GetxController {
               data['event'] == "DRIVER_SIN_BIN_STATUS_UPDATE") {
             final driverData = data['data'];
             final driverId = driverData['id']?.toString();
+            final newDriverStatus = driverData['driver_status'];
+            final newBookingStatus = driverData['booking_status'];
+
             if (driverId != null) {
               int index = onlineDriversList.indexWhere((e) => e.id.toString() == driverId);
               if (index != -1) {
-                onlineDriversList[index].driverStatus = driverData['driver_status'];
-                onlineDriversList[index].bookingStatus = driverData['booking_status'];
+                onlineDriversList[index].driverStatus = newDriverStatus;
+                if (newBookingStatus != null) {
+                  onlineDriversList[index].bookingStatus = newBookingStatus;
+                }
+                onlineDriversList[index] = onlineDriversList[index];
+              } else {
+                int busyIdx = busyDriversList.indexWhere((e) => e.id.toString() == driverId);
+                if (busyIdx != -1) {
+                  final driver = busyDriversList[busyIdx];
+                  driver.driverStatus = newDriverStatus;
+                  if (newBookingStatus != null) driver.bookingStatus = newBookingStatus;
+                  upsertOnlineDriver(driver);
+                } else {
+                  final driver = DashboardDriverObject.fromJson(Map<String, dynamic>.from(driverData));
+                  if (newDriverStatus != null) driver.driverStatus = newDriverStatus;
+                  if (newBookingStatus != null) driver.bookingStatus = newBookingStatus;
+                  upsertOnlineDriver(driver);
+                }
               }
+
               if (dashboardAllData?.drivers != null) {
                 int dIndex = dashboardAllData!.drivers!.indexWhere((e) => e.id.toString() == driverId);
                 if (dIndex != -1) {
-                  dashboardAllData!.drivers![dIndex].driverStatus = driverData['driver_status'];
-                  dashboardAllData!.drivers![dIndex].bookingStatus = driverData['booking_status'];
+                  dashboardAllData!.drivers![dIndex].driverStatus = newDriverStatus;
+                  if (newBookingStatus != null) {
+                    dashboardAllData!.drivers![dIndex].bookingStatus = newBookingStatus;
+                  }
                 }
               }
+              update();
               _scheduleDriverMarkerRefresh();
             }
           } else if (data['event'] == "DRIVER_BOOKING_STATUS_WEB_UPDATE") {
@@ -615,8 +638,7 @@ class DashboardController extends GetxController {
     }
 
     var response = await Api().get(
-      // "drivers/login-busy",
-      "drivers/login-busy1",
+      "drivers/login-busy",
       queryParameters: queryParams,
       sendCompanyId: true,
     );
@@ -624,23 +646,23 @@ class DashboardController extends GetxController {
       print(response.data);
       onlineDriversList.clear();
       busyDriversList.clear();
-      // if (response.data['login_drivers'] != null && response.data['login_drivers'].isNotEmpty) {
-      //   response.data['login_drivers'].forEach((element) {
-      //     final driver = DashboardDriverObject.fromJson(Map<String, dynamic>.from(element));
-      //     if (subId == null || driver.subsidiaryId == null || driver.subsidiaryId.toString() == subId.toString()) {
-      //       onlineDriversList.add(driver);
-      //     }
-      //   });
-      // }
+      if (response.data['login_drivers'] != null && response.data['login_drivers'].isNotEmpty) {
+        response.data['login_drivers'].forEach((element) {
+          final driver = DashboardDriverObject.fromJson(Map<String, dynamic>.from(element));
+          if (subId == null || driver.subsidiaryId == null || driver.subsidiaryId.toString() == subId.toString()) {
+            onlineDriversList.add(driver);
+          }
+        });
+      }
 
-      // if (response.data['busy_drivers'] != null && response.data['busy_drivers'].isNotEmpty) {
-      //   response.data['busy_drivers'].forEach((element) {
-      //     final driver = DashboardDriverObject.fromJson(Map<String, dynamic>.from(element));
-      //     if (subId == null || driver.subsidiaryId == null || driver.subsidiaryId.toString() == subId.toString()) {
-      //       busyDriversList.add(driver);
-      //     }
-      //   });
-      // }
+      if (response.data['busy_drivers'] != null && response.data['busy_drivers'].isNotEmpty) {
+        response.data['busy_drivers'].forEach((element) {
+          final driver = DashboardDriverObject.fromJson(Map<String, dynamic>.from(element));
+          if (subId == null || driver.subsidiaryId == null || driver.subsidiaryId.toString() == subId.toString()) {
+            busyDriversList.add(driver);
+          }
+        });
+      }
       plotAllDriverMarkers(fitCamera: true);
       if (timer == null) {
         timer = Timer.periodic(const Duration(seconds: 5), (_) {
@@ -687,6 +709,7 @@ class DashboardController extends GetxController {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _driverMarkerRefreshScheduled = false;
       plotAllDriverMarkers();
+      getAllOnlineDrivers();
     });
   }
 

@@ -668,13 +668,12 @@ class _DriversViewState extends State<DriversView> {
                                         decoration: BoxDecoration(
                                           color:
                                           driver.bookingStatus == "Accepted"?Colors.orange:
-                                          driver.bookingStatus == "Arrived"?Colors.yellow:
-                                          driver.bookingStatus == "POB"?Colors.purple:
+                                          driver.bookingStatus == "Arrived"?Colors.purple:
+                                          driver.bookingStatus == "POB"?Colors.yellow:
                                           driver.bookingStatus == "On Route"?Colors.red:
                                           driver.bookingStatus == "STC"?Colors.blue:
-                                          driver.driverStatus == "On Break"? Color(0xFF580404):
-                                          driver.driverStatus == "SinBin"? Color(
-                                              0xFF6287A6):
+                                          driver.driverStatus == "On Break"? Colors.amber:
+                                          driver.driverStatus == "SinBin"? Colors.black54:
                                           Colors.green,
                                           border: isDriverSelected
                                               ? Border.all(
