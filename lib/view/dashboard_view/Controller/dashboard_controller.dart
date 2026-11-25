@@ -638,31 +638,32 @@ class DashboardController extends GetxController {
     }
 
     var response = await Api().get(
-      "drivers/login-busy",
+      // "drivers/login-busy",
+      "drivers/login-busy1",
       queryParameters: queryParams,
       sendCompanyId: true,
     );
     if (response.statusCode == 200) {
       print(response.data);
-      onlineDriversList.clear();
-      busyDriversList.clear();
-      if (response.data['login_drivers'] != null && response.data['login_drivers'].isNotEmpty) {
-        response.data['login_drivers'].forEach((element) {
-          final driver = DashboardDriverObject.fromJson(Map<String, dynamic>.from(element));
-          if (subId == null || driver.subsidiaryId == null || driver.subsidiaryId.toString() == subId.toString()) {
-            onlineDriversList.add(driver);
-          }
-        });
-      }
-
-      if (response.data['busy_drivers'] != null && response.data['busy_drivers'].isNotEmpty) {
-        response.data['busy_drivers'].forEach((element) {
-          final driver = DashboardDriverObject.fromJson(Map<String, dynamic>.from(element));
-          if (subId == null || driver.subsidiaryId == null || driver.subsidiaryId.toString() == subId.toString()) {
-            busyDriversList.add(driver);
-          }
-        });
-      }
+      // onlineDriversList.clear();
+      // busyDriversList.clear();
+      // if (response.data['login_drivers'] != null && response.data['login_drivers'].isNotEmpty) {
+      //   response.data['login_drivers'].forEach((element) {
+      //     final driver = DashboardDriverObject.fromJson(Map<String, dynamic>.from(element));
+      //     if (subId == null || driver.subsidiaryId == null || driver.subsidiaryId.toString() == subId.toString()) {
+      //       onlineDriversList.add(driver);
+      //     }
+      //   });
+      // }
+      //
+      // if (response.data['busy_drivers'] != null && response.data['busy_drivers'].isNotEmpty) {
+      //   response.data['busy_drivers'].forEach((element) {
+      //     final driver = DashboardDriverObject.fromJson(Map<String, dynamic>.from(element));
+      //     if (subId == null || driver.subsidiaryId == null || driver.subsidiaryId.toString() == subId.toString()) {
+      //       busyDriversList.add(driver);
+      //     }
+      //   });
+      // }
       plotAllDriverMarkers(fitCamera: true);
       if (timer == null) {
         timer = Timer.periodic(const Duration(seconds: 5), (_) {
