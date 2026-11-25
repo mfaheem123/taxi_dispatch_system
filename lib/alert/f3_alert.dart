@@ -8,9 +8,13 @@ import '../component/alert_close_button.dart';
 import '../component/dropdown_button.dart';
 import '../controller/dashboard_alert_controller.dart';
 import '../view/customer/model/restricDriver.dart';
+import '../view/dashboard_view/Controller/dashboard_controller.dart';
+import '../view/dashboard_view/dashboard/busy_driver_right_click_menu.dart';
+import '../view/dashboard_view/models/dashboard_model.dart';
 
 void showDriverInfoAlert() {
   final controller = Get.put(DashboardAlertController());
+  controller.clearData();
   controller.fetchRestrictedDrivers();
 
   Get.dialog(
@@ -28,9 +32,11 @@ class DriverInfoAlert extends StatefulWidget {
 
 class _DriverInfoAlertState extends State<DriverInfoAlert> {
   final controller = Get.find<DashboardAlertController>();
+  final DashboardController _dashboardController = Get.find<DashboardController>();
 
   // Initially keeping selected driver as null so "SELECT DRIVER" is active
   DriverObject? localSelectedDriver;
+  bool isForcingLogout = false;
 
   @override
   Widget build(BuildContext context) {
@@ -147,13 +153,30 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
                           const SizedBox(width: 16),
 
                           CustomButton(
-                            onTap: () {
-                              // Perform Force Logout
-                            },
+                            onTap: (isLoggedIn && !isForcingLogout)
+                                ? () async {
+                              final int? driverId = currentDriver.id;
+                              if (driverId == null) return;
+
+                              setState(() => isForcingLogout = true);
+
+                              final bool success = await _dashboardController.forceLogoutDriver(driverId);
+
+                              if (!mounted) return;
+                              setState(() {
+                                isForcingLogout = false;
+                                if (success) {
+                                  currentDriver.sessionStatus = "logged_out";
+                                }
+                              });
+                            }
+                                : null,
                             width: 130,
                             height: 38,
                             btnText: "FORCE LOGOUT",
-                            btnColor: DynamicColors.redClr,
+                            btnColor: (isLoggedIn && !isForcingLogout)
+                                ? DynamicColors.redClr
+                                : Colors.grey.shade400,
                             borderRadius: 4,
                             verticalPadding: 0.0,
                             fontSize: 12,
@@ -296,7 +319,16 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
                                           ),
                                           if (isDriverSelected)
                                             GestureDetector(
-                                              onTap: () {},
+                                              onTap: () {
+                                                showDriverCallExtensionDialog(
+                                                  context,
+                                                  driver: DashboardDriverObject(
+                                                    id: currentDriver.id,
+                                                    name: currentDriver.name,
+                                                    username: currentDriver.username,
+                                                  ),
+                                                );
+                                              },
                                               child: Container(
                                                 width: 32,
                                                 height: 32,

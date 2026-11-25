@@ -139,22 +139,69 @@ class _DriverCommissionViewScreenState extends State<DriverCommissionViewScreen>
     final toDate = data?.toDate != null ? data!.toDate.toString().split(' ').first : (controller?.updateFilterToDate ?? '');
     final transactionDate = data?.transactionDate != null ? data!.transactionDate.toString().split(' ').first : (controller?.updateTransactionDateController ?? '');
 
-    double calculatedParkingCongestionTotal = 0.0;
-    for (var item in items) {
-      final b = item.booking;
-      final paymentTypeName = (b?.paymentType?.name ?? "").trim().toUpperCase();
-      final accountName = (b?.account?.name ?? "").trim().toUpperCase();
+    double pDouble(dynamic val) => double.tryParse(val?.toString() ?? '0') ?? 0.0;
 
-      bool isAccountJob = !paymentTypeName.contains("CASH") &&
-          (paymentTypeName.contains("ACCOUNT") || accountName.isNotEmpty);
-
-      if (isAccountJob) {
-        double pc = double.tryParse(b?.parkingCharges?.toString() ?? '0') ?? 0.0;
-        double cc = double.tryParse(b?.congestionCharges?.toString() ?? '0') ?? 0.0;
-        calculatedParkingCongestionTotal += (pc + cc);
+    double getWithoutComm(dynamic b) {
+      if (controller != null) {
+        return pDouble(controller.calculateWithoutCommission(b));
       }
+      return pDouble(b?.fares) + pDouble(b?.waitingCharges) + pDouble(b?.extraDropCharges);
     }
 
+    double getFinalDriverComm(dynamic b) {
+      if (controller != null) {
+        return pDouble(controller.calculateFinalDriverComm(b));
+      }
+      final commRate = pDouble(data?.driver?.driverCommission) / 100;
+      return getWithoutComm(b) * commRate;
+    }
+
+    final activeBookings = items.map((e) => e.booking).where((b) => b != null).toList();
+
+    // 1. Cash Total
+    final double cashTotal = activeBookings.fold(0.0, (sum, b) {
+      bool isCash = b?.paymentType?.name?.toString().trim().toLowerCase() == "cash";
+      if (isCash && b?.commission == true) {
+        return sum + getWithoutComm(b);
+      }
+      return sum;
+    });
+
+    // 2. Account W/Comm Total
+    final double accountFareTotal = activeBookings.fold(0.0, (sum, b) {
+      bool isAccount = b?.paymentType?.name?.toString().trim().toLowerCase() == "account";
+      if (isAccount && b?.commission == true) {
+        return sum + pDouble(b?.fares);
+      }
+      return sum;
+    });
+
+    // 3. Parking & Congestion Charges
+    final double parkingCongestionTotal = activeBookings.fold(0.0, (sum, b) {
+      bool isAccount = b?.paymentType?.name?.toString().trim().toLowerCase() == "account";
+      if (isAccount) {
+        return sum + pDouble(b?.parkingCharges) + pDouble(b?.congestionCharges);
+      }
+      return sum;
+    });
+
+    // 4. Commission Total
+    final double commissionTotal = activeBookings.fold(0.0, (sum, b) {
+      return sum + getFinalDriverComm(b);
+    });
+
+    // 5. Account WO/Comm Total
+    final double accountWOCmmTotal = activeBookings.fold(0.0, (sum, b) {
+      bool isAccount = b?.paymentType?.name?.toString().trim().toLowerCase() == "account";
+      if (isAccount && b?.commission == false) {
+        return sum + getWithoutComm(b);
+      }
+      return sum;
+    });
+
+    // 6. Grand Total & Owed
+    final double grandTotal = cashTotal + accountFareTotal;
+    final double owedTotal = commissionTotal - accountFareTotal - parkingCongestionTotal;
     const tableBorder = TableBorder(
       verticalInside: BorderSide(color: Colors.black, width: 0.5),
       horizontalInside: BorderSide(color: Colors.black, width: 0.5),
@@ -297,10 +344,10 @@ class _DriverCommissionViewScreenState extends State<DriverCommissionViewScreen>
                   flex: 2,
                   child: Column(
                     children: [
-                      _buildFooterRowPlain("CASH TOTAL", double.tryParse(data?.cashJobsTotal ?? '0') ?? controller?.updateCashTotalValue ?? 0.0),
-                      _buildFooterRowPlain("COMMISSION TOTAL", double.tryParse(data?.commissionTotal ?? '0') ?? controller?.updateTotalCommissionVar ?? 0.0),
-                      _buildFooterRowPlain("OWED", double.tryParse(data?.owed ?? '0') ?? controller?.updateOwedVar ?? 0.0),
-                      _buildFooterRowPlain("TOTAL", double.tryParse(data?.jobsTotal ?? '0') ?? controller?.updateGrandTotalVar ?? 0.0, isBold: true),
+                      _buildFooterRowPlain("CASH TOTAL", cashTotal),
+                      _buildFooterRowPlain("COMMISSION TOTAL", commissionTotal),
+                      _buildFooterRowPlain("OWED", owedTotal),
+                      _buildFooterRowPlain("TOTAL", grandTotal, isBold: true),
                     ],
                   ),
                 ),
@@ -309,12 +356,9 @@ class _DriverCommissionViewScreenState extends State<DriverCommissionViewScreen>
                   flex: 2,
                   child: Column(
                     children: [
-                      _buildFooterRowPlain("ACCOUNT W/COMM TOTAL", double.tryParse(data?.accountJobsTotal ?? '0') ?? controller?.updateAccountFareTotalVar ?? 0.0),
-                      _buildFooterRowPlain("ACCOUNT WO/COMM TOTAL", controller?.updateAccountWOCmmVar ?? 0.0),
-                      _buildFooterRowPlain("PARKING & CONGESTION CHARGES", calculatedParkingCongestionTotal > 0
-                          ? calculatedParkingCongestionTotal
-                          : (controller?.updateParkingCongestionVar ?? 0.0),
-                      )
+                      _buildFooterRowPlain("ACCOUNT W/COMM TOTAL", accountFareTotal),
+                      _buildFooterRowPlain("ACCOUNT WO/COMM TOTAL", accountWOCmmTotal),
+                      _buildFooterRowPlain("PARKING & CONGESTION CHARGES", parkingCongestionTotal),
                     ],
                   ),
                 ),

@@ -35,6 +35,12 @@ class DashboardAlertController extends GetxController{
     }
   }
 
+  void clearData() {
+    fetchDriver = null;
+    isRestrictedDriverLoading.value = false;
+    selectedDriver.value = null;
+  }
+
   /// f4 Driver Earning
   DriverEarningModel? driverEarningModel;
   bool isDriverEarningLoading = false;
