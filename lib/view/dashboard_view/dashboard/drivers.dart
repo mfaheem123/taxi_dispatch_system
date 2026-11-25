@@ -143,22 +143,28 @@ class _DriversViewState extends State<DriversView> {
   String statusCarImage(String status) {
     switch (status) {
       case "Accepted":
-        return "assets/c.png";   // Orange Car
+        return "assets/orange.svg";   // Orange Car
 
       case "Arrived":
-        return "assets/d.png";   // Yellow Car
-
-      case "POB":
-        return "assets/tracking_car.png"; // POB Car
+        return "assets/bg-secondary.svg";   // Yellow Car
 
       case "On Route":
-        return "assets/tracking_car.png";    // Black Car
+        return "assets/bg-danger.svg";     // Black Car
 
       case "STC":
-        return "assets/a.png";        // Blue Car
+        return "assets/stc_icon.svg";        // Blue Car
+
+      case "POB":
+        return "assets/yellow.svg";
+
+      case "On Break":
+        return "assets/amber.svg";        // Blue Car
+
+      case "SinBin":
+        return "assets/bg-dark.svg";        // Blue Car
 
       default:
-        return "assets/green.jpeg";
+        return "assets/bg-green.svg";
     }
   }
 
@@ -669,7 +675,7 @@ class _DriversViewState extends State<DriversView> {
                                           color:
                                           driver.bookingStatus == "Accepted"?Colors.orange:
                                           driver.bookingStatus == "Arrived"?Colors.purple:
-                                          driver.bookingStatus == "POB"?Colors.yellow:
+                                          driver.bookingStatus == "POB"? Color(0xFF564F1F):
                                           driver.bookingStatus == "On Route"?Colors.red:
                                           driver.bookingStatus == "STC"?Colors.blue:
                                           driver.driverStatus == "On Break"? Colors.amber:

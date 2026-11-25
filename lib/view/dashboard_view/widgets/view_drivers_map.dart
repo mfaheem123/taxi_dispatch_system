@@ -702,11 +702,17 @@ class _ViewDriversMapState extends State<ViewDriversMap>
       case "Accepted":
         return Colors.orange;
       case "Arrived":
-        return Colors.amber.shade800;
+        return Colors.purple;
+      case "POB":
+        return Colors.yellow;
       case "On Route":
         return Colors.red;
       case "STC":
         return Colors.blue;
+      case "On Break":
+        return Colors.amber;
+      case "SinBin":
+        return Colors.black54;
       default:
         return Colors.green;
     }
@@ -717,6 +723,7 @@ class _ViewDriversMapState extends State<ViewDriversMap>
     switch (status) {
       case "Accepted":
         return "assets/orange.svg";   // Orange Car
+        // return "assets/bg-primary.svg";   // Orange Car
 
       case "Arrived":
         return "assets/bg-secondary.svg";   // Yellow Car
@@ -725,10 +732,10 @@ class _ViewDriversMapState extends State<ViewDriversMap>
         return "assets/bg-danger.svg";    // Black Car
 
       case "STC":
-        return "assets/stc_icon.svg";        // Blue Car
+        return "assets/bg-info.svg";        // Blue Car
 
       case "POB":
-        return "assets/yellow.svg";
+        return "assets/bg-warning.svg";
 
       case "On Break":
         return "assets/amber.svg";        // Blue Car

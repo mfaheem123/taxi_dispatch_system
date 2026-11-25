@@ -638,32 +638,32 @@ class DashboardController extends GetxController {
     }
 
     var response = await Api().get(
-      // "drivers/login-busy",
-      "drivers/login-busy1",
+      "drivers/login-busy",
+      // "drivers/login-busy1",
       queryParameters: queryParams,
       sendCompanyId: true,
     );
     if (response.statusCode == 200) {
       print(response.data);
-      // onlineDriversList.clear();
-      // busyDriversList.clear();
-      // if (response.data['login_drivers'] != null && response.data['login_drivers'].isNotEmpty) {
-      //   response.data['login_drivers'].forEach((element) {
-      //     final driver = DashboardDriverObject.fromJson(Map<String, dynamic>.from(element));
-      //     if (subId == null || driver.subsidiaryId == null || driver.subsidiaryId.toString() == subId.toString()) {
-      //       onlineDriversList.add(driver);
-      //     }
-      //   });
-      // }
-      //
-      // if (response.data['busy_drivers'] != null && response.data['busy_drivers'].isNotEmpty) {
-      //   response.data['busy_drivers'].forEach((element) {
-      //     final driver = DashboardDriverObject.fromJson(Map<String, dynamic>.from(element));
-      //     if (subId == null || driver.subsidiaryId == null || driver.subsidiaryId.toString() == subId.toString()) {
-      //       busyDriversList.add(driver);
-      //     }
-      //   });
-      // }
+      onlineDriversList.clear();
+      busyDriversList.clear();
+      if (response.data['login_drivers'] != null && response.data['login_drivers'].isNotEmpty) {
+        response.data['login_drivers'].forEach((element) {
+          final driver = DashboardDriverObject.fromJson(Map<String, dynamic>.from(element));
+          if (subId == null || driver.subsidiaryId == null || driver.subsidiaryId.toString() == subId.toString()) {
+            onlineDriversList.add(driver);
+          }
+        });
+      }
+
+      if (response.data['busy_drivers'] != null && response.data['busy_drivers'].isNotEmpty) {
+        response.data['busy_drivers'].forEach((element) {
+          final driver = DashboardDriverObject.fromJson(Map<String, dynamic>.from(element));
+          if (subId == null || driver.subsidiaryId == null || driver.subsidiaryId.toString() == subId.toString()) {
+            busyDriversList.add(driver);
+          }
+        });
+      }
       plotAllDriverMarkers(fitCamera: true);
       if (timer == null) {
         timer = Timer.periodic(const Duration(seconds: 5), (_) {
@@ -680,15 +680,28 @@ class DashboardController extends GetxController {
   String _driverStatusCarImage(String status) {
     switch (status) {
       case "Accepted":
-        return "assets/c.png"; // Orange
+        return "assets/orange.svg";   // Orange Car
+
       case "Arrived":
-        return "assets/d.png"; // Yellow
+        return "assets/bg-secondary.svg";   // Yellow Car
+
       case "On Route":
-        return "assets/tracking_car.png"; // Black
+        return "assets/bg-danger.svg";     // Black Car
+
       case "STC":
-        return "assets/a.png"; // Blue
+        return "assets/stc_icon.svg";        // Blue Car
+
+      case "POB":
+        return "assets/yellow.svg";
+
+      case "On Break":
+        return "assets/amber.svg";        // Blue Car
+
+      case "SinBin":
+        return "assets/bg-dark.svg";        // Blue Car
+
       default:
-        return "assets/green.jpeg";
+        return "assets/bg-green.svg";
     }
   }
 

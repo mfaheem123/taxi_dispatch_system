@@ -18,17 +18,32 @@ import '../models/dashboard_model.dart';
 String _statusCarImage(String status) {
   switch (status) {
     case "Accepted":
-      return "assets/c.png";
+      return "assets/orange.svg";   // Orange Car
+
     case "Arrived":
-      return "assets/d.png";
+      return "assets/bg-secondary.svg";   // Yellow Car
+
     case "On Route":
-      return "assets/tracking_car.png";
+      return "assets/bg-danger.svg";     // Black Car
+
     case "STC":
-      return "assets/a.png";
+      return "assets/stc_icon.svg";        // Blue Car
+
+    case "POB":
+      return "assets/yellow.svg";
+
+    case "On Break":
+      return "assets/amber.svg";        // Blue Car
+
+    case "SinBin":
+      return "assets/bg-dark.svg";        // Blue Car
+
     default:
-      return "assets/green.jpeg";
+      return "assets/bg-green.svg";
   }
 }
+
+
 
 void showContextMenuOnBusyDriver(
   BuildContext context,
