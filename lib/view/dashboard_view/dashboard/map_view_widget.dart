@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:html' as html;
 import '../../../routes/app_pages.dart';
+import '../../booking_routes_screen.dart';
 import '../booking_form_scope.dart';
 import '../Controller/dashboard_controller.dart';
 
@@ -100,6 +101,9 @@ class _MapViewWidgetState extends State<MapViewWidget> {
         final List<LatLng> polylinePoints =  controller.polylinePoints.isNotEmpty
             ? controller.polylinePointsCoordinate
             : [LatLng(51.2709722, 0.1893883)];
+
+        final bool showRoutesIcon = controller.pickupController.text.trim().isNotEmpty &&
+            controller.dropOffController.text.trim().isNotEmpty;
 
         return Container(
           decoration: const BoxDecoration(
@@ -312,30 +316,82 @@ class _MapViewWidgetState extends State<MapViewWidget> {
               Positioned(
                 bottom: 7,
                 left: 7,
-                child: Container(
-                  height: 20,
-                  width: 30,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(6),
-                    color: DynamicColors.secondaryClr,
-                    // Keyboard-Tab highlight ring (driven from the driver panel).
-                    // Always a 2px border so toggling doesn't shift the child.
-                    border: Border.all(
-                      color: controller.selectedMapButtonIndex == 0
-                          ? DynamicColors.primaryClr
-                          : Colors.transparent,
-                      width: 2,
+                child:
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      height: 20,
+                      width: 30,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(6),
+                        color: DynamicColors.secondaryClr,
+                        // Keyboard-Tab highlight ring (driven from the driver panel).
+                        // Always a 2px border so toggling doesn't shift the child.
+                        border: Border.all(
+                          color: controller.selectedMapButtonIndex == 0
+                              ? DynamicColors.primaryClr
+                              : Colors.transparent,
+                          width: 2,
+                        ),
+                      ),
+                      child: IconButton(
+                        padding: EdgeInsets.zero,
+                        icon: const Icon(Icons.crop_square_outlined),
+                        onPressed: () {
+                          // Get.to(ViewDriversMap());
+                          final newTabUrl = Uri.base.origin + '/#' + Routes.viewDriversMap;
+                          html.window.open(newTabUrl, '_blank');
+                        },
+                      ),
                     ),
-                  ),
-                  child: IconButton(
-                    padding: EdgeInsets.zero,
-                    icon: const Icon(Icons.crop_square_outlined),
-                    onPressed: () {
-                      // Get.to(ViewDriversMap());
-                      final newTabUrl = Uri.base.origin + '/#' + Routes.viewDriversMap;
-                      html.window.open(newTabUrl, '_blank');
-                    },
-                  ),
+                    if (showRoutesIcon) ...[
+                      const SizedBox(width: 6),
+                      Container(
+                        height: 20,
+                        width: 26,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(6),
+                          color: DynamicColors.secondaryClr,
+                        ),
+                        child: IconButton(
+                          padding: EdgeInsets.zero,
+                          icon: Icon(Icons.account_tree_outlined, size: 15, color: DynamicColors.primaryClr),
+                          onPressed: () {
+                            final pickupItem = controller.polyLineMarkerInfo.firstWhereOrNull(
+                                  (e) => e.markerType == "PICKUP LOCATION" || e.markerType == "Create Booking PICKUP",
+                            );
+                            final dropItem = controller.polyLineMarkerInfo.firstWhereOrNull(
+                                  (e) => e.markerType == "DROP LOCATION" || e.markerType == "Create Booking DROP LOCATION",
+                            );
+
+                            Get.to(() => BookingRoutesScreen(
+                              pickupLatLng: pickupItem != null ? LatLng(pickupItem.lat, pickupItem.lng) : null,
+                              dropoffLatLng: dropItem != null ? LatLng(dropItem.lat, dropItem.lng) : null,
+                              pickupAddress: controller.pickupController.text,
+                              dropoffAddress: controller.dropOffController.text,
+                              onRouteSelected: (selectedRoute) {
+                                controller.polylinePointsCoordinate = List<LatLng>.from(selectedRoute.points);
+                                controller.polylines = [
+                                  Polyline(
+                                    points: selectedRoute.points,
+                                    color: selectedRoute.routeColor,
+                                    strokeWidth: 4.0,
+                                  ),
+                                ];
+                                controller.totalDistance.value = selectedRoute.distanceMiles.toStringAsFixed(2);
+                                controller.totalTimeDuration.value = "${selectedRoute.durationMinutes.round()} min";
+                                controller.fixedFare.value = selectedRoute.fareText.replaceAll("FARES:", "").trim();
+                                controller.mapFocusPoints = List<LatLng>.from(selectedRoute.points);
+                                controller.focusMapOnJourney();
+                                controller.update();
+                              },
+                            ));
+                          },
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
 
