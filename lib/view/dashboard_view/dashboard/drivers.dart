@@ -1,5 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/color.dart';
+import 'package:dashboard_new1/component/images.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/view/dashboard_view/dashboard/row_button_widget_map.dart';
 import 'package:flutter/material.dart';
@@ -84,6 +85,7 @@ class _DriversViewState extends State<DriversView> {
         BotToast.showText(text: "Driver Refreshed");
         break;
       case 2: // visibility_off_sharp
+      _driverController.focusMapOnJourney();
         debugPrint("Header action: HIDE/SHOW");
         break;
       case 3: // mail
@@ -942,11 +944,10 @@ class _DriversViewState extends State<DriversView> {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                Image.asset(
-                  statusCarImage(driver?.bookingStatus ?? ""),
+                Images.buildDriverCarIcon(
+                  driver?.bookingStatus ?? driver?.driverStatus,
                   width: 70,
                   height: 70,
-                  fit: BoxFit.contain,
                 ),
                 // Image(
                 //   image: AssetImage("assets/tracking_car.png"),

@@ -1,4 +1,4 @@
-import 'package:dashboard_new1/alert/restrict_drivers_alert.dart';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -8,8 +8,8 @@ import '../component/customButton.dart';
 import '../component/dropdown_button.dart';
 import '../component/textStyle.dart';
 import '../component/text_field.dart';
-import '../component/text_widget.dart';
 import '../view/dashboard_view/Controller/dashboard_controller.dart';
+import '../view/dashboard_view/models/sms_email_search_model.dart';
 
 class SendEmailAlert extends StatefulWidget {
   const SendEmailAlert({super.key});
@@ -24,9 +24,9 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "alert";
+    dashBoardCntrl.fetchSendEmailCompanyConfiguration();
   }
 
   List<String> sendEmailRoleList = [
@@ -35,7 +35,227 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
     "ACCOUNT",
   ];
 
-  String? selectedRole;
+  String? selectedRole = "CUSTOMER";
+
+  void _searchContacts() {
+    dashBoardCntrl.searchEmailContacts(selectedRole, (items) {
+      if (mounted) {
+        _showSelectEmailDialog(context, items);
+      }
+    });
+  }
+
+  void _showSelectEmailDialog(BuildContext context, List<SearchContactItem> items) {
+    Map<int, bool> selectedMap = {};
+
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        backgroundColor: Colors.white,
+        child: SizedBox(
+          width: 580,
+          child: StatefulBuilder(
+            builder: (context, setDialogState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: DynamicColors.gryClr.withOpacity(0.5),
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.list, color: DynamicColors.primaryClr, size: 20),
+                            const SizedBox(width: 8),
+                            Text(
+                              "SELECT EMAIL ADDRESSES",
+                              style: titleDesign(),
+                            ),
+                          ],
+                        ),
+                        FocusTraversalOrder(
+                          order: const NumericFocusOrder(999),
+                          child: const AlertCloseButton(),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Divider(height: 1),
+                  // Table Header
+                  Container(
+                    color: const Color(0xFFF1F5F9),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    child: Row(
+                      children: [
+                        const SizedBox(
+                          width: 40,
+                          child: Text(""),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            "CONTACT NAME",
+                            style: mozillaTextSemiBoldText(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            "EMAIL ADDRESS",
+                            style: mozillaTextSemiBoldText(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Divider(height: 1),
+                  // List items
+                  SizedBox(
+                    height: 250,
+                    child: ListView.separated(
+                      itemCount: items.length,
+                      separatorBuilder: (context, index) => const Divider(height: 1, color: Color(0xFFE2E8F0)),
+                      itemBuilder: (context, index) {
+                        final item = items[index];
+                        final name = item.name ?? '';
+                        final email = item.email ?? '';
+                        final isSelected = selectedMap[index] ?? false;
+
+                        return InkWell(
+                          onTap: () {
+                            setDialogState(() {
+                              selectedMap[index] = !isSelected;
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 40,
+                                  child: Checkbox(
+                                    value: isSelected,
+                                    activeColor: DynamicColors.primaryClr,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    onChanged: (val) {
+                                      setDialogState(() {
+                                        selectedMap[index] = val ?? false;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    name,
+                                    style: outFitRegular(fontSize: 12, color: Colors.black87),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 3,
+                                  child: Text(
+                                    email,
+                                    style: outFitRegular(fontSize: 12, color: email.isEmpty ? Colors.grey : Colors.black87),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const Divider(height: 1),
+                  // Footer buttons
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFE2E8F0),
+                            foregroundColor: Colors.black87,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                          ),
+                          onPressed: () => Get.back(),
+                          child: Text(
+                            "CLOSE",
+                            style: mozillaTextSemiBoldText(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: DynamicColors.primaryClr,
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                          ),
+                          icon: const Icon(Icons.check, size: 16),
+                          onPressed: () {
+                            List<String> selectedEmails = [];
+                            selectedMap.forEach((idx, isSel) {
+                              if (isSel && idx < items.length) {
+                                final email = items[idx].email ?? '';
+                                if (email.toString().isNotEmpty) {
+                                  selectedEmails.add(email.toString());
+                                }
+                              }
+                            });
+
+                            if (selectedEmails.isEmpty) {
+                              BotToast.showText(text: "Please select at least one contact with a valid email");
+                              return;
+                            }
+
+                            recipientController.text = selectedEmails.join(', ');
+                            Get.back();
+                          },
+                          label: Text(
+                            "CONFIRM SELECTION",
+                            style: mozillaTextSemiBoldText(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,6 +330,7 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
                                       controller: dashBoardCntrl.emailToController,
                                       borderRadius: 6,
                                       inputFormatters: [UpperCaseTextFormatter()],
+                                      onSubmitted: (val) => _searchContacts(),
                                     ),
                                   ),
                                   const SizedBox(width: 8),
@@ -131,7 +352,7 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
                                       )),
                                   const SizedBox(width: 8),
                                   InkWell(
-                                    onTap: () {},
+                                    onTap: _searchContacts,
                                     child: Container(
                                       height: 30,
                                       width: 50,
@@ -152,8 +373,9 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
                         _buildFieldLabel("TO EMAIL"),
                         CustomTextField(
                             borderRadius: 6,
-                            hintText: "RECIPIENT@EXAMPLE.COM",
-                            hintStyle: outFitRegular(fontSize: 11),
+                            hintText: "RECIPIENTS@EXAMPLE.COM",
+
+                            hintStyle: outFitRegular(fontSize: 11, fontWeight: FontWeight.w100),
                             controller: recipientController,
                           inputFormatters: [UpperCaseTextFormatter()]
                         ),
@@ -198,7 +420,9 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
                             ),
                             const SizedBox(width: 10),
                             ElevatedButton.icon(
-                              onPressed: () {},
+                              onPressed: () {
+                                dashBoardCntrl.sendEmail(recipientController.text);
+                              },
                               icon: const Icon(Icons.send, size: 16),
                               label: Text(
                                 "SEND EMAIL",
@@ -407,7 +631,7 @@ class _SendMessageAlertState extends State<SendMessageAlert> {
                               onPressed: () {},
                               icon: const Icon(Icons.send, size: 16),
                               label: Text(
-                                "SEND SMS",
+                                "SEND EMAIL",
                                 style: mozillaTextSemiBoldText(
                                     fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white),
                               ),

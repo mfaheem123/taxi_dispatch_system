@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/color.dart';
+import 'package:dashboard_new1/component/images.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/dashboard_view/models/dashboard_model.dart';
 import 'package:dashboard_new1/view/dashboard_view/models/getMobileNumberWithNameModel.dart';
@@ -47,6 +48,7 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import '../../administration/model/user_model.dart';
+import '../models/sms_email_search_model.dart';
 import 'driver_activity_model.dart';
 
 RxString shortCutKeyValue = 'shortCutKey'.obs;
@@ -339,6 +341,19 @@ class DashboardController extends GetxController {
         dashboardAllData!.drivers!.add(driver);
       }
     }
+  }
+
+  void _syncMasterDriversList() {
+    if (dashboardAllData == null) {
+      dashboardAllData = DashboardDataModel(drivers: []);
+    }
+    final Map<String, DashboardDriverObject> map = {};
+    for (var d in [...onlineDriversList, ...busyDriversList]) {
+      if (d.id != null) {
+        map[d.id.toString()] = d;
+      }
+    }
+    dashboardAllData!.drivers = map.values.toList();
   }
 
   void removeDriver(dynamic driverId) {
@@ -664,6 +679,7 @@ class DashboardController extends GetxController {
           }
         });
       }
+      _syncMasterDriversList();
       plotAllDriverMarkers(fitCamera: true);
       if (timer == null) {
         timer = Timer.periodic(const Duration(seconds: 5), (_) {
@@ -756,11 +772,10 @@ class DashboardController extends GetxController {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              Image.asset(
-                _driverStatusCarImage(driver.bookingStatus ?? ""),
+              Images.buildDriverCarIcon(
+                driver.bookingStatus ?? driver.driverStatus,
                 width: 70,
                 height: 70,
-                fit: BoxFit.contain,
               ),
               Text(
                 driver.username ?? "",
@@ -3548,7 +3563,7 @@ class DashboardController extends GetxController {
       'miles': totalDistance,
       if (selectSubsidiariesValue != null)
         'subsidiary_id': selectSubsidiariesValue!.id,
-      'booking_status_id':  '1',
+      'booking_status_id':id != null? jobDetails!.bookingStatusId.toString() :'1',
       'booking_type_id':
           multiVehicleTempList.isNotEmpty || multiReservationTemp.isNotEmpty
               ? '2'
@@ -4965,6 +4980,107 @@ checkCompleteActiveBooking(dynamic driverId) async {
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo booking recover
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo delete booking
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo send email / sms search & config
+  fetchSendEmailCompanyConfiguration() async {
+    try {
+      var subsidiaryId = Employee.selectedEmployee?.subsidiaryId 
+          ?? Api().sp.read('userData')?['subsidiary_id'] 
+          ?? Api.singleton.globalCompanyId;
+
+      var response = await Api().get("company-configuration/subsidiary_id/$subsidiaryId");
+      if (response.statusCode == 200) {
+        final configJson = response.data['company_configuration'];
+        if (configJson != null && configJson['email_username'] != null) {
+          final email = configJson['email_username'].toString();
+          if (email.isNotEmpty) {
+            sendEmailController.text = email;
+            update();
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint("Error fetching company email: $e");
+    }
+  }
+
+  searchEmailContacts(String? selectedRole, Function(List<SearchContactItem> items) onResults) async {
+    final searchText = emailToController.text.trim();
+    final role = (selectedRole ?? 'customer').toLowerCase();
+
+    BotToast.showLoading();
+    try {
+   var response = await Api().get("sms-email/search", queryParameters: {'type': role,},sendCompanyId: true);
+      BotToast.closeAllLoading();
+      if (response.statusCode == 200) {
+        SmsEmailSearchModel searchModel = SmsEmailSearchModel.fromJson(response.data);
+        List<SearchContactItem> items = searchModel.data ?? [];
+        if (items.isEmpty) {
+          BotToast.showText(text: "No contacts found");
+          return;
+        }
+        onResults(items);
+      } else {
+        BotToast.showText(text: "Failed to search contacts");
+      }
+    } catch (e) {
+      BotToast.closeAllLoading();
+      BotToast.showText(text: "Error: $e");
+    }
+  }
+
+  sendEmail(String recipientEmailsText) async {
+    if (recipientEmailsText.trim().isEmpty) {
+      BotToast.showText(text: "Please enter or select TO EMAIL");
+      return;
+    }
+    if (subjectController.text.trim().isEmpty) {
+      BotToast.showText(text: "Please enter a subject");
+      return;
+    }
+    if (typeEmailController.text.trim().isEmpty) {
+      BotToast.showText(text: "Please enter email content");
+      return;
+    }
+
+    List<String> toEmails = recipientEmailsText
+        .split(',')
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
+
+    if (toEmails.isEmpty) {
+      BotToast.showText(text: "Please provide valid recipient email(s)");
+      return;
+    }
+
+    var subsidiaryId = Employee.selectedEmployee?.subsidiaryId 
+        ?? Api().sp.read('userData')?['subsidiary_id'] 
+        ?? 3;
+
+    var formData = {
+      "subsidiary_id": subsidiaryId is int ? subsidiaryId : int.tryParse(subsidiaryId.toString()) ?? 3,
+      "to": toEmails,
+      "subject": subjectController.text.trim(),
+      "text": typeEmailController.text.trim(),
+    };
+
+    try {
+      var response = await Api().post(formData, "emails/send", sendCompanyId: true);
+      if (response.statusCode == 200) {
+        BotToast.showText(text: response.data['message'] ?? "Email sent successfully!");
+        emailToController.clear();
+        subjectController.clear();
+        typeEmailController.clear();
+        Get.back();
+      } else {
+        BotToast.showText(text: response?.data?['message'] ?? "Failed to send email");
+      }
+    } catch (e) {
+      debugPrint("Error sending email: $e");
+      BotToast.showText(text: "Error sending email: $e");
+    }
+  }
 
   deleteBooking(dynamic id) async {
     var response = await Api().delete("bookings/delete/$id");

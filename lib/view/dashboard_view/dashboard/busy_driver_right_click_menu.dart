@@ -6,7 +6,8 @@ import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../Model/driver_models/single_driver_model.dart';
-import '../../../component/color.dart';
+import 'package:dashboard_new1/component/color.dart';
+import 'package:dashboard_new1/component/images.dart';
 import '../../../component/marker_class.dart';
 import '../../../component/networks/api.dart';
 import '../../../utils/open_edit_booking_tab.dart';
@@ -81,11 +82,10 @@ void showContextMenuOnBusyDriver(
             child: Stack(
               alignment: Alignment.center,
               children: [
-                Image.asset(
-                  _statusCarImage(driver?.bookingStatus ?? ""),
+                Images.buildDriverCarIcon(
+                  driver?.bookingStatus ?? driver?.driverStatus,
                   width: 70,
                   height: 70,
-                  fit: BoxFit.contain,
                 ),
                 Text(
                   "${driver!.username}",
