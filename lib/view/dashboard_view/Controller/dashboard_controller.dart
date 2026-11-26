@@ -5006,12 +5006,21 @@ checkCompleteActiveBooking(dynamic driverId) async {
 
   searchEmailContacts(String? selectedRole, Function(List<SearchContactItem> items) onResults) async {
     final searchText = emailToController.text.trim();
-    final role = (selectedRole ?? 'customer').toLowerCase();
+    final role = (selectedRole ?? 'CUSTOMER').toLowerCase();
 
     BotToast.showLoading();
     try {
-   var response = await Api().get("sms-email/search", queryParameters: {'type': role,},sendCompanyId: true);
+      Map<String, dynamic> queryParams = {
+        'type': role,
+
+      };
+      if (searchText.isNotEmpty) {
+          queryParams['email'] = searchText;
+      }
+
+      var response = await Api().get("sms-email/search", queryParameters: queryParams,sendCompanyId: true);
       BotToast.closeAllLoading();
+
       if (response.statusCode == 200) {
         SmsEmailSearchModel searchModel = SmsEmailSearchModel.fromJson(response.data);
         List<SearchContactItem> items = searchModel.data ?? [];
