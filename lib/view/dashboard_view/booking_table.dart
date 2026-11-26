@@ -58,6 +58,262 @@ class _BookingTableState extends State<BookingTable> {
 
   List permissions = [];
 
+  // ────────── Excel-style resizable columns
+  /// One width per table column (checkbox, TYPE, REF #, ... Action). Built on
+  /// first layout from the screen width, then only changed by dragging a
+  /// header's right edge.
+  List<double>? _colWidths;
+
+  /// True once the starting widths have been stretched to the available width.
+  bool _fittedToWidth = false;
+
+  /// One-off: scales the starting widths so the columns fill the whole width
+  /// instead of leaving a gap on the right. After this, only dragging changes
+  /// the widths.
+  void _fitColumnsTo(double available) {
+    final w = _colWidths;
+    if (_fittedToWidth || w == null || !available.isFinite || available <= 0) {
+      return;
+    }
+    _fittedToWidth = true;
+    final total = w.fold<double>(0, (a, b) => a + b);
+    if (total >= available) return;
+    final k = available / total;
+    for (var i = 0; i < w.length; i++) {
+      w[i] = w[i] * k;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) setState(() {});
+    });
+  }
+  static const double _kMinColWidth = 48;
+  static const double _kMaxColWidth = 700;
+  static const double _kCellPad = 6;
+
+  void _initColWidths(double screenWidth) {
+    if (_colWidths != null) return;
+    final b = (screenWidth / 20.5).clamp(90.0, 200.0);
+    _colWidths = [
+      48, // checkbox
+      56, // TYPE
+      b, // REF #
+      b + 20, // DATETIME
+      b, // CUS
+      b + 40, // PICKUP
+      b + 40, // DROPOFF
+      b, // ACC
+      b, // DRV
+      b, // VEH
+      b, // NOTE
+      b, // FARE
+      b, // STATUS
+      b, // J/T
+      b, // P/T
+      200, // Action
+    ];
+  }
+
+  void _resizeColumn(int i, double dx) {
+    final w = _colWidths;
+    if (w == null || i >= w.length) return;
+    setState(() => w[i] = (w[i] + dx).clamp(_kMinColWidth, _kMaxColWidth));
+  }
+
+  /// Wraps each header label in a fixed-width box with a drag handle on its
+  /// right edge — the same grip an Excel column border has.
+  List<DataColumn> _resizableColumns(List<DataColumn> cols) {
+    final w = _colWidths!;
+    return List.generate(cols.length, (i) {
+      final l = cols[i].label;
+      var inner = l is Expanded ? l.child : l;
+      // A Column hands its children loose widths, so the search box would keep
+      // its old fixed width; stretch makes it follow the column.
+      if (inner is Column) {
+        inner = Column(
+          mainAxisAlignment: inner.mainAxisAlignment,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: inner.children,
+        );
+      }
+      return DataColumn(
+        label: SizedBox(
+          width: w[i],
+          child: Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: _kCellPad),
+                child: SizedBox(width: w[i] - _kCellPad * 2, child: inner),
+              ),
+              Positioned(
+                right: 0,
+                top: 0,
+                bottom: 0,
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.resizeColumn,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onHorizontalDragUpdate: (d) => _resizeColumn(i, d.delta.dx),
+                    child: Container(
+                      width: 8,
+                      alignment: Alignment.centerRight,
+                      child: Container(width: 2, color: Colors.grey.shade500),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    });
+  }
+
+  /// Header cells (title + search box), built separately so the header can
+  /// stay pinned while the body scrolls.
+  List<DataColumn> _headerColumns(double widthss) {
+    return [
+                          buildHeaderWithSearch(widget: SizedBox(
+                            width: 20,
+                            child: Checkbox(value: false, onChanged: (v){
+                            }),
+                          )),
+                          buildHeaderWithSearch(title: "TYPE"),
+                          buildHeaderWithSearch(
+                              widhtss: widthss/20.5,
+                              title: "REF #", onChanged: (v){
+                            controller.referenceNumber.text = v;
+                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
+                          }),
+                          buildHeaderWithSearch(
+                              widhtss: widthss/20.5,
+                              title: "DATETIME", onChanged: (v){
+                            controller.pickupDate.text = v;
+                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
+                          }),
+                          buildHeaderWithSearch(
+                              widhtss: widthss/20.5,
+                              title: "CUS", onChanged: (v){
+                            controller.name.text = v;
+                            controller.getDashboardTableData(tableId: controller.selectedTabId);
+                          }),
+                          buildHeaderWithSearch(
+                              widhtss: widthss/20.5,
+                              title: "PICKUP", onChanged: (v){
+                            controller.pickup.text = v;
+                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
+                          }),
+                          buildHeaderWithSearch(
+                              widhtss: widthss/20.5,
+                              title: "DROPOFF", onChanged: (v){
+                            controller.dropOff.text = v;
+                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
+                          }),
+                          buildHeaderWithSearch(widhtss: widthss/20.5,title: "ACC", onChanged: (v){
+                            controller.accountName.text = v;
+                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
+                          }),
+                          buildHeaderWithSearch(widhtss: widthss/20.5,title: "DRV", onChanged: (v){
+                            controller.driverName.text = v;
+                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
+                          }),
+                          buildHeaderWithSearch(widhtss: widthss/20.5,title: "VEH", onChanged: (v){
+                            controller.vehicleTypeName.text = v;
+                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
+                          }),
+                          buildHeaderWithSearch(widhtss: widthss/20.5,title: "NOTE", onChanged: (v){
+                            controller.notes.text = v;
+                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
+                          }),
+                          buildHeaderWithSearch(widhtss: widthss/20.5,title: "FARE", onChanged: (v){
+                            controller.fares.text = v;
+                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
+                          }),
+                          buildHeaderWithSearch(widhtss: widthss/20.5,title: "STATUS", onChanged: (v){
+                            controller.bookingStatus.text = v;
+                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
+                          }),
+                          buildHeaderWithSearch(widhtss: widthss/20.5,title: "J/T", onChanged: (v){
+                            controller.journeyType.text = v;
+                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
+                          }),
+                          buildHeaderWithSearch(widhtss: widthss/20.5,title: "P/T", onChanged: (v){
+                            controller.paymentType.text = v;
+                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
+                          }),
+                          buildHeaderWithSearch(widhtss: widthss/20.5,title: "Action"),
+    ];
+  }
+
+  /// Width-only columns for the scrolling body table (its own heading is
+  /// collapsed to zero height; the pinned header table shows the real one).
+  List<DataColumn> _blankColumns() => List.generate(
+      _colWidths!.length,
+      (i) => DataColumn(label: SizedBox(width: _colWidths![i])));
+
+  /// Pinned header + scrolling body, both inside ONE horizontal scroller so
+  /// they move sideways together; only the body scrolls vertically.
+  Widget _stickyHeaderTable(double widthss, {required DataTable bodyTable}) {
+    final total = _colWidths!.fold<double>(0, (a, b) => a + b);
+    final bodyHeight =
+        (MediaQuery.of(context).size.height * 0.55).clamp(280.0, 900.0);
+    return LayoutBuilder(builder: (context, box) {
+      _fitColumnsTo(box.maxWidth);
+      return _stickyHeaderBody(widthss, bodyTable, total, bodyHeight);
+    });
+  }
+
+  Widget _stickyHeaderBody(
+      double widthss, DataTable bodyTable, double total, double bodyHeight) {
+    return SingleChildScrollView(
+      // Columns can be dragged wider than the screen.
+      scrollDirection: Axis.horizontal,
+      child: SizedBox(
+        width: total,
+        child: Column(
+          children: [
+            DataTable(
+              horizontalMargin: 0,
+              columnSpacing: 0,
+              headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
+              headingTextStyle:
+                  const TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
+              dataRowMinHeight: 0,
+              dataRowMaxHeight: 0,
+              border: TableBorder(
+                verticalInside: BorderSide(width: 0.5, color: Colors.grey.shade400),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              columns: _resizableColumns(_headerColumns(widthss)),
+              rows: const [],
+            ),
+            SizedBox(
+              height: bodyHeight,
+              child: SingleChildScrollView(child: bodyTable),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Forces every cell of a row to its column's width, so the whole column
+  /// follows the header while it is being dragged.
+  List<DataCell> _sizedCells(List<DataCell> cells) {
+    final w = _colWidths!;
+    return List.generate(cells.length, (i) {
+      final loose = i <= 1; // checkbox + TYPE icon stay centred, not stretched
+      Widget child = cells[i].child;
+      if (loose) child = Center(child: child);
+      return DataCell(SizedBox(
+        width: w[i],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: _kCellPad),
+          child: ClipRect(child: child),
+        ),
+      ));
+    });
+  }
+
   /// Ensures _rowFocusNodes always matches the current data length.
   void _syncRowFocusNodes(int length) {
     if (_rowFocusNodes.length == length) return;
@@ -170,6 +426,7 @@ class _BookingTableState extends State<BookingTable> {
   @override
   Widget build(BuildContext context) {
     double widthss = MediaQuery.of(context).size.width;
+    _initColWidths(widthss);
     // if(controller.allAddressesData.isNotEmpty){
     //   totalRows = 4;
     // }else{
@@ -333,11 +590,12 @@ class _BookingTableState extends State<BookingTable> {
                     //     :
                     controller.dashboardTableModelData == null
                             ? SizedBox()
-                            : SizedBox(
-                                width: Get.width,
-                                child: DataTable(
-                        headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
-                        columnSpacing: widthss/80,
+                            : _stickyHeaderTable(
+                                widthss,
+                                bodyTable: DataTable(
+                        horizontalMargin: 0,
+                        headingRowHeight: 0,
+                        columnSpacing: 0,
                         dataRowMinHeight: 40,
                         dataRowMaxHeight: 48,
 
@@ -360,77 +618,9 @@ class _BookingTableState extends State<BookingTable> {
                           ),
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        columns: [
-                          buildHeaderWithSearch(widget: SizedBox(
-                            width: 20,
-                            child: Checkbox(value: false, onChanged: (v){
-                            }),
-                          )),
-                          buildHeaderWithSearch(title: "TYPE"),
-                          buildHeaderWithSearch(
-                              widhtss: widthss/20.5,
-                              title: "REF #", onChanged: (v){
-                            controller.referenceNumber.text = v;
-                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
-                          }),
-                          buildHeaderWithSearch(
-                              widhtss: widthss/20.5,
-                              title: "DATETIME", onChanged: (v){
-                            controller.pickupDate.text = v;
-                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
-                          }),
-                          buildHeaderWithSearch(
-                              widhtss: widthss/20.5,
-                              title: "CUS", onChanged: (v){
-                            controller.name.text = v;
-                            controller.getDashboardTableData(tableId: controller.selectedTabId);
-                          }),
-                          buildHeaderWithSearch(
-                              widhtss: widthss/20.5,
-                              title: "PICKUP", onChanged: (v){
-                            controller.pickup.text = v;
-                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
-                          }),
-                          buildHeaderWithSearch(
-                              widhtss: widthss/20.5,
-                              title: "DROPOFF", onChanged: (v){
-                            controller.dropOff.text = v;
-                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
-                          }),
-                          buildHeaderWithSearch(widhtss: widthss/20.5,title: "ACC", onChanged: (v){
-                            controller.accountName.text = v;
-                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
-                          }),
-                          buildHeaderWithSearch(widhtss: widthss/20.5,title: "DRV", onChanged: (v){
-                            controller.driverName.text = v;
-                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
-                          }),
-                          buildHeaderWithSearch(widhtss: widthss/20.5,title: "VEH", onChanged: (v){
-                            controller.vehicleTypeName.text = v;
-                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
-                          }),
-                          buildHeaderWithSearch(widhtss: widthss/20.5,title: "NOTE", onChanged: (v){
-                            controller.notes.text = v;
-                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
-                          }),
-                          buildHeaderWithSearch(widhtss: widthss/20.5,title: "FARE", onChanged: (v){
-                            controller.fares.text = v;
-                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
-                          }),
-                          buildHeaderWithSearch(widhtss: widthss/20.5,title: "STATUS", onChanged: (v){
-                            controller.bookingStatus.text = v;
-                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
-                          }),
-                          buildHeaderWithSearch(widhtss: widthss/20.5,title: "J/T", onChanged: (v){
-                            controller.journeyType.text = v;
-                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
-                          }),
-                          buildHeaderWithSearch(widhtss: widthss/20.5,title: "P/T", onChanged: (v){
-                            controller.paymentType.text = v;
-                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
-                          }),
-                          buildHeaderWithSearch(widhtss: widthss/20.5,title: "Action"),
-                        ],
+                        // Real header lives in the pinned table above; this one
+                        // only carries the column widths.
+                        columns: _blankColumns(),
                         rows: List.generate(
                           controller.dashboardTableModelData!.data!.length,
                               (index) {
@@ -449,7 +639,7 @@ class _BookingTableState extends State<BookingTable> {
                                 },
                               ),
 
-                              cells: [
+                              cells: _sizedCells([
 
                                 DataCell(
                                   Builder(
@@ -1357,7 +1547,7 @@ class _BookingTableState extends State<BookingTable> {
                                     ],
                                   ),
                                 ),
-                              ],
+                              ]),
                             );
                           },
                         ),

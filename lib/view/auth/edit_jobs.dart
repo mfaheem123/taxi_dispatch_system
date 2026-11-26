@@ -312,17 +312,6 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
     return j == 'R/N' || j == 'RETURN';
   }
 
-  // late final _pass = TextEditingController(text: '0');
-  // late final _lugg = TextEditingController(text: '0');
-  // late final _slugg = TextEditingController(text: '0');
-  //_isReturnJourney ? 46 : 31
-  void _onMultiReservation() => debugPrint('F8 / Multi Reservation tapped');
-
-  void _onAddVehicles() => debugPrint('F9 / Vehicles tapped');
-
-  void _onVia() => debugPrint('Via tapped');
-
-  void _onClear() => debugPrint('F7 / Clear tapped');
 
   void _showPickBookingAlert() {
     showDialog(

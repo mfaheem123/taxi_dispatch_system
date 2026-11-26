@@ -3548,7 +3548,7 @@ class DashboardController extends GetxController {
       'miles': totalDistance,
       if (selectSubsidiariesValue != null)
         'subsidiary_id': selectSubsidiariesValue!.id,
-      'booking_status_id': '1',
+      'booking_status_id':  '1',
       'booking_type_id':
           multiVehicleTempList.isNotEmpty || multiReservationTemp.isNotEmpty
               ? '2'
