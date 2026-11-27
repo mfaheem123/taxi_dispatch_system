@@ -5014,25 +5014,32 @@ checkCompleteActiveBooking(dynamic driverId) async {
     }
   }
 
-  searchEmailContacts(String? selectedRole, Function(List<SearchContactItem> items) onResults) async {
-
-    final searchText = emailToController.text.trim().toLowerCase();
-    final role = (selectedRole ?? 'customer').toLowerCase();
+  /// Core reusable method to search contacts for Email and SMS dialogs
+  Future<void> searchContacts({
+    required String? selectedRole,
+    required String searchText,
+    required String defaultRole,
+    required Function(List<SearchContactItem> items) onResults,
+  }) async {
+    final queryText = searchText.trim().toLowerCase();
+    final role = (selectedRole ?? defaultRole).toLowerCase();
 
     BotToast.showLoading();
     try {
-      var response = await Api().get("sms-email/search", queryParameters: {'type': role}, sendCompanyId: true);
-
+      var response = await Api().get(
+        "sms-email/search",
+        queryParameters: {'type': role},
+        sendCompanyId: true,
+      );
       BotToast.closeAllLoading();
-
       if (response.statusCode == 200) {
         SmsEmailSearchModel searchModel = SmsEmailSearchModel.fromJson(response.data);
         List<SearchContactItem> items = searchModel.data ?? [];
-        if (searchText.isNotEmpty) {
+        if (queryText.isNotEmpty) {
           items = items.where((item) =>
-            (item.name ?? '').toLowerCase().contains(searchText) ||
-            (item.email ?? '').toLowerCase().contains(searchText) ||
-            (item.mobile ?? '').toLowerCase().contains(searchText)
+            (item.name ?? '').toLowerCase().contains(queryText) ||
+            (item.email ?? '').toLowerCase().contains(queryText) ||
+            (item.mobile ?? '').toLowerCase().contains(queryText)
           ).toList();
         }
         if (items.isEmpty) {
@@ -5049,36 +5056,22 @@ checkCompleteActiveBooking(dynamic driverId) async {
     }
   }
 
-  searchSmsContacts(String? selectedRole, Function(List<SearchContactItem> items) onResults) async {
-    final searchText = mobileNoController.text.trim().toLowerCase();
-    final role = (selectedRole ?? 'driver').toLowerCase();
+  void searchEmailContacts(String? selectedRole, Function(List<SearchContactItem> items) onResults) {
+    searchContacts(
+      selectedRole: selectedRole,
+      searchText: emailToController.text,
+      defaultRole: 'customer',
+      onResults: onResults,
+    );
+  }
 
-    BotToast.showLoading();
-    try {
-      var response = await Api().get("sms-email/search", queryParameters: {'type': role}, sendCompanyId: true);
-      BotToast.closeAllLoading();
-      if (response.statusCode == 200) {
-        SmsEmailSearchModel searchModel = SmsEmailSearchModel.fromJson(response.data);
-        List<SearchContactItem> items = searchModel.data ?? [];
-        if (searchText.isNotEmpty) {
-          items = items.where((item) =>
-            (item.name ?? '').toLowerCase().contains(searchText) ||
-            (item.mobile ?? '').toLowerCase().contains(searchText) ||
-            (item.email ?? '').toLowerCase().contains(searchText)
-          ).toList();
-        }
-        if (items.isEmpty) {
-          BotToast.showText(text: "No contacts found");
-          return;
-        }
-        onResults(items);
-      } else {
-        BotToast.showText(text: "Failed to search contacts");
-      }
-    } catch (e) {
-      BotToast.closeAllLoading();
-      BotToast.showText(text: "Error: $e");
-    }
+  void searchSmsContacts(String? selectedRole, Function(List<SearchContactItem> items) onResults) {
+    searchContacts(
+      selectedRole: selectedRole,
+      searchText: mobileNoController.text,
+      defaultRole: 'driver',
+      onResults: onResults,
+    );
   }
 
   sendEmail(String recipientEmailsText) async {
