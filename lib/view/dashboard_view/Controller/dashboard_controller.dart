@@ -5005,16 +5005,55 @@ checkCompleteActiveBooking(dynamic driverId) async {
   }
 
   searchEmailContacts(String? selectedRole, Function(List<SearchContactItem> items) onResults) async {
-    final searchText = emailToController.text.trim();
+    final searchText = emailToController.text.trim().toLowerCase();
     final role = (selectedRole ?? 'customer').toLowerCase();
 
     BotToast.showLoading();
     try {
-   var response = await Api().get("sms-email/search", queryParameters: {'type': role,},sendCompanyId: true);
+      var response = await Api().get("sms-email/search", queryParameters: {'type': role}, sendCompanyId: true);
       BotToast.closeAllLoading();
       if (response.statusCode == 200) {
         SmsEmailSearchModel searchModel = SmsEmailSearchModel.fromJson(response.data);
         List<SearchContactItem> items = searchModel.data ?? [];
+        if (searchText.isNotEmpty) {
+          items = items.where((item) =>
+            (item.name ?? '').toLowerCase().contains(searchText) ||
+            (item.email ?? '').toLowerCase().contains(searchText) ||
+            (item.mobile ?? '').toLowerCase().contains(searchText)
+          ).toList();
+        }
+        if (items.isEmpty) {
+          BotToast.showText(text: "No contacts found");
+          return;
+        }
+        onResults(items);
+      } else {
+        BotToast.showText(text: "Failed to search contacts");
+      }
+    } catch (e) {
+      BotToast.closeAllLoading();
+      BotToast.showText(text: "Error: $e");
+    }
+  }
+
+  searchSmsContacts(String? selectedRole, Function(List<SearchContactItem> items) onResults) async {
+    final searchText = mobileNoController.text.trim().toLowerCase();
+    final role = (selectedRole ?? 'driver').toLowerCase();
+
+    BotToast.showLoading();
+    try {
+      var response = await Api().get("sms-email/search", queryParameters: {'type': role}, sendCompanyId: true);
+      BotToast.closeAllLoading();
+      if (response.statusCode == 200) {
+        SmsEmailSearchModel searchModel = SmsEmailSearchModel.fromJson(response.data);
+        List<SearchContactItem> items = searchModel.data ?? [];
+        if (searchText.isNotEmpty) {
+          items = items.where((item) =>
+            (item.name ?? '').toLowerCase().contains(searchText) ||
+            (item.mobile ?? '').toLowerCase().contains(searchText) ||
+            (item.email ?? '').toLowerCase().contains(searchText)
+          ).toList();
+        }
         if (items.isEmpty) {
           BotToast.showText(text: "No contacts found");
           return;
@@ -5079,6 +5118,78 @@ checkCompleteActiveBooking(dynamic driverId) async {
     } catch (e) {
       debugPrint("Error sending email: $e");
       BotToast.showText(text: "Error sending email: $e");
+    }
+  }
+
+  sendSms(String recipientNumbersText) async {
+    if (recipientNumbersText.trim().isEmpty) {
+      BotToast.showText(text: "Please enter or select CONTACT NUMBER");
+      return;
+    }
+    if (typeYourMessageController.text.trim().isEmpty) {
+      BotToast.showText(text: "Please enter message content");
+      return;
+    }
+
+    List<String> toNumbers = recipientNumbersText
+        .split(',')
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
+
+    if (toNumbers.isEmpty) {
+      BotToast.showText(text: "Please provide valid recipient mobile number(s)");
+      return;
+    }
+
+    var subsidiaryId = Employee.selectedEmployee?.subsidiaryId 
+        ?? Api().sp.read('userData')?['subsidiary_id'] 
+        ?? 3;
+
+    dynamic port = 1;
+    try {
+      var configRes = await Api().get("company-configuration/subsidiary_id/$subsidiaryId");
+      if (configRes != null && configRes.statusCode == 200) {
+        final configJson = configRes.data['company_configuration'];
+        if (configJson != null) {
+          port = configJson['port'] ?? configJson['sms_port'] ?? configJson['default_port'] ?? 1;
+          if (port is String) {
+            port = int.tryParse(port) ?? 1;
+          }
+        }
+      }
+    } catch (e) {
+
+      debugPrint("Error fetching port from company-configuration: $e");
+    }
+
+    var formData = {
+      "company_id": subsidiaryId is int ? subsidiaryId : int.tryParse(subsidiaryId.toString()) ?? 3,
+      "mobile": toNumbers,
+      "custom_message": typeYourMessageController.text.trim(),
+      "port": port,
+    };
+
+    try {
+      var response = await Api().post(formData, "sms/send-sms", sendCompanyId: true);
+      if (response != null && response.statusCode == 200) {
+        String msg = (response.data is Map && response.data['message'] != null)
+            ? response.data['message'].toString()
+            : "SMS sent successfully!";
+        BotToast.showText(text: msg);
+        mobileNoController.clear();
+        smsToController.clear();
+        typeYourMessageController.clear();
+        Get.back();
+      } else {
+        String errMsg = (response?.data is Map && response?.data['message'] != null)
+            ? response.data['message'].toString()
+            : "Failed to send SMS";
+        BotToast.showText(text: errMsg);
+      }
+    } catch (e) {
+      debugPrint("Error sending SMS: $e");
+      BotToast.showText(text: "Error sending SMS: $e");
     }
   }
 
