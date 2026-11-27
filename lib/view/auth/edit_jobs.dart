@@ -309,7 +309,10 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
   bool get _isReturnJourney {
     final j =
     controller.selectJourneyTypeValue?.journeyType?.toUpperCase().trim();
-    return j == 'R/N' || j == 'RETURN';
+    // The journey type id is left as the booking reports it; the return
+    // fields only appear when the API actually sent a second (return) leg.
+    final hasReturnLeg = (controller.jobDataaa?.booking.length ?? 0) > 1;
+    return (j == 'R/N' || j == 'RETURN') && hasReturnLeg;
   }
 
 
@@ -620,10 +623,10 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                             : _controller.locationtypezoneModel!
                                             .zonesList!,
                                             (v) =>
-                                            setState(
-                                                    () =>
-                                                controller.dashboardZoneValue =
-                                                    v),
+                                            setState(() {
+                                              controller.dashboardZoneValue = v;
+                                              controller.getFaresCalculation();
+                                            }),
                                         isMobile,
                                             (value) {
                                           WidgetsBinding.instance
@@ -786,10 +789,10 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                             : _controller
                                             .locationtypezoneModel!.zonesList!,
                                             (v) =>
-                                            setState(
-                                                    () =>
-                                                controller.dashboardDZoneValue =
-                                                    v),
+                                            setState(() {
+                                              controller.dashboardDZoneValue = v;
+                                              controller.getFaresCalculation();
+                                            }),
                                         isMobile,
                                             (value) {
                                           WidgetsBinding.instance
@@ -1546,7 +1549,10 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                 _controller.locationtypezoneModel == null
                 ? []
                 : _controller.locationtypezoneModel!.zonesList!,
-                (v) => setState(() => controller.dashboardRNZoneValue = v),
+                (v) => setState(() {
+                  controller.dashboardRNZoneValue = v;
+                  controller.getFaresCalculation();
+                }),
             isMobile,
                 (value) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -1676,7 +1682,10 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                 _controller.locationtypezoneModel == null
                 ? []
                 : _controller.locationtypezoneModel!.zonesList!,
-                (v) => setState(() => controller.dashboardRN1ZoneValue = v),
+                (v) => setState(() {
+                  controller.dashboardRN1ZoneValue = v;
+                  controller.getFaresCalculation();
+                }),
             isMobile,
                 (value) {
               controller.onChangeHandler(

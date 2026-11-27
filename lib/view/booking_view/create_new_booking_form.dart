@@ -777,6 +777,7 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                 onChanged: (v) => setState(() {
                   controller.dashboardRNZoneValue = v;
                   _locationController.RNzoneValue = v;
+                  controller.getFaresCalculation();
                 }),
               ))),
               ..._ifReturn(SpanField(LabeledInput('R/PICK NOTES',
@@ -812,6 +813,7 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                 onChanged: (v) => setState(() {
                   controller.dashboardRN1ZoneValue = v;
                   _locationController.RN1zoneValue = v;
+                  controller.getFaresCalculation();
                 }),
               ))),
               ..._ifReturn(SpanField(LabeledInput('R/DROP NOTES',

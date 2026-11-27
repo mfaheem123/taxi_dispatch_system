@@ -3914,23 +3914,33 @@ class DashboardController extends GetxController {
     String? swappedPickup,
     String? swappedDropoff,
   }) async {
-    this.isPickBooking = pickBooking;
+    // Wait for the response first. Nothing on the controller (flags, form
+    // fields, markers, job data) is touched until a valid booking has arrived,
+    // so a slow, failed or empty response leaves the current form untouched.
+    dynamic response;
+    try {
+      response = await Api().get("bookings/getbyid/$id");
+    } catch (e) {
+      debugPrint('dashBoardDataBinding: request failed: $e');
+      return;
+    }
 
+    if (response != null && response.statusCode == 200) {
+      final JobsDetailsJobs parsedJob = JobsDetailsJobs.fromJson(response.data);
 
-    var response = await Api().get("bookings/getbyid/$id");
+      if (parsedJob.booking.isEmpty) {
+        BotToast.showText(text: "BOOKING NOT FOUND");
+        return;
+      }
 
-    if (response.statusCode == 200) {
+      // Response is good — only now start assigning data.
+      this.isPickBooking = pickBooking;
       DateTime now = DateTime.now();
       String currentDateStr = DateFormat('yyyy-MM-dd').format(now);
       String currentTimeStr = DateFormat('HH:mm').format(now);
 
-      jobDataaa = JobsDetailsJobs.fromJson(response.data);
+      jobDataaa = parsedJob;
       controllerAlert.clear();
-
-      if (jobDataaa!.booking.isEmpty) {
-        BotToast.showText(text: "BOOKING NOT FOUND");
-        return;
-      }
 
       jobDetails = jobDataaa!.booking[0];
       polyLineMarkerInfo.clear();
@@ -4256,7 +4266,7 @@ class DashboardController extends GetxController {
         _controller.updateLocationValue.value == false;
       }
             // ── JOURNEY TYPE & FARE HANDLING ──
-      if ((jobDataaa!.booking.length > 1) && !pickBooking) {
+      if ((jobDataaa!.booking.length > 1) && !pickBooking && jobDataaa != null) {
         jourValue = 'R/N';
         selectJourneyTypeValue =
             dashboardAllData?.journeyTypes?.firstWhereOrNull(
@@ -5005,13 +5015,16 @@ checkCompleteActiveBooking(dynamic driverId) async {
   }
 
   searchEmailContacts(String? selectedRole, Function(List<SearchContactItem> items) onResults) async {
+
     final searchText = emailToController.text.trim().toLowerCase();
     final role = (selectedRole ?? 'customer').toLowerCase();
 
     BotToast.showLoading();
     try {
       var response = await Api().get("sms-email/search", queryParameters: {'type': role}, sendCompanyId: true);
+
       BotToast.closeAllLoading();
+
       if (response.statusCode == 200) {
         SmsEmailSearchModel searchModel = SmsEmailSearchModel.fromJson(response.data);
         List<SearchContactItem> items = searchModel.data ?? [];
