@@ -1847,6 +1847,54 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     );
   }
 
+  int get _settingsBadgeCount {
+    int count = 0;
+    if (controller.parkingChargesController.text.trim().isNotEmpty) count++;
+    if (controller.congestionChargesController.text.trim().isNotEmpty) count++;
+    if (controller.waitingChargesController.text.trim().isNotEmpty) count++;
+    if (controller.extraDropChargesController.text.trim().isNotEmpty) count++;
+    if (controller.creditCardChargesController.text.trim().isNotEmpty) count++;
+    if (controller.meetGreetController.text.trim().isNotEmpty) count++;
+    if (controller.companyPriceController.text.trim().isNotEmpty) count++;
+    if (controller.returnCompanyPriceController.text.trim().isNotEmpty) count++;
+    if (controller.parkingChargesReturnController.text.trim().isNotEmpty) count++;
+    if (controller.congestionChargesReturnController.text.trim().isNotEmpty) count++;
+    if (controller.waitingChargesReturnController.text.trim().isNotEmpty) count++;
+    if (controller.extraDropChargesReturnController.text.trim().isNotEmpty) count++;
+    if (controller.meetGreetReturnController.text.trim().isNotEmpty) count++;
+    count += controller.driversList.length;
+    count += controller.selectedBookingAttributes.length;
+    return count;
+  }
+
+  int get _childSeatsBadgeCount {
+    int count = controller.childSeatAlert.length;
+    if (count == 0) {
+      if (controller.noOfChildren.text.trim().isNotEmpty ||
+          controller.childAge.text.trim().isNotEmpty) {
+        count = 1;
+      }
+    }
+    return count;
+  }
+
+  int get _extraInfoBadgeCount {
+    int count = controller.controllerAlert.length;
+    if (controller.specialRequirementsController.text.trim().isNotEmpty) count++;
+    if (controller.specialRequirementsReturnController.text.trim().isNotEmpty) count++;
+    if (controller.controllerNoteController.text.trim().isNotEmpty) count++;
+    if (controller.controllerNoteReturnController.text.trim().isNotEmpty) count++;
+    return count;
+  }
+
+  int get _creditCardBadgeCount {
+    int count = 0;
+    if (controller.creditCardChargesController.text.trim().isNotEmpty) {
+      count++;
+    }
+    return count;
+  }
+
   // ────────── comms + luggage (PASS=22, LUGG=23, SLUGG=24)
   Widget _commsAndLuggageRow(bool isMobile) {
     Widget checkbox(String label, bool value, ValueChanged<bool?> onChanged,
@@ -1873,9 +1921,11 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           ),
         );
 
-
     Widget iconBtn(IconData icon,
-        {VoidCallback? onPressed, required num tab}) =>
+        {VoidCallback? onPressed,
+        required num tab,
+        bool hasBadge = false,
+        int? badgeCount}) =>
         FocusTraversalOrder(
           order: NumericFocusOrder(tab.toDouble()),
           child: GlowFocus(
@@ -1893,24 +1943,60 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 }
                 return KeyEventResult.ignored;
               },
-              child: Container(
-                  margin: const EdgeInsets.only(left: 6),
-                  decoration: BoxDecoration(
-                    color: _purpleSoft,
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: _border),
-                  ),
-                  child: IconButton(
-                    onPressed: onPressed,
-                    padding: const EdgeInsets.all(4),
-                    visualDensity: VisualDensity.compact,
-                    splashRadius: 18,
-                    icon: Icon(
-                      icon,
-                      size: 17,
-                      color: Colors.black,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                      margin: const EdgeInsets.only(left: 6),
+                      decoration: BoxDecoration(
+                        color: _purpleSoft,
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: _border),
+                      ),
+                      child: IconButton(
+                        onPressed: onPressed,
+                        padding: const EdgeInsets.all(4),
+                        visualDensity: VisualDensity.compact,
+                        splashRadius: 18,
+                        icon: Icon(
+                          icon,
+                          size: 17,
+                          color: Colors.black,
+                        ),
+                      )),
+                  if (hasBadge)
+                    Positioned(
+                      top: -4,
+                      right: -4,
+                      child: Container(
+                        padding: (badgeCount != null && badgeCount > 0)
+                            ? const EdgeInsets.symmetric(horizontal: 4, vertical: 1)
+                            : const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.white, width: 1.5),
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 14,
+                          minHeight: 14,
+                        ),
+                        child: (badgeCount != null && badgeCount > 0)
+                            ? Text(
+                                badgeCount > 99 ? '99+' : '$badgeCount',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold,
+                                  height: 1.0,
+                                ),
+                                textAlign: TextAlign.center,
+                              )
+                            : null,
+                      ),
                     ),
-                  )),
+                ],
+              ),
             ),
           ),
         );
@@ -1960,27 +2046,40 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (controller.selectPaymentTypeValue?.name?.toUpperCase().contains('CREDIT') == true)
-              iconBtn(Icons.credit_card, tab: _isReturnJourney ? 38.8 : 26.8, onPressed: () {
+              iconBtn(Icons.credit_card,
+                  tab: _isReturnJourney ? 38.8 : 26.8,
+                  hasBadge: _creditCardBadgeCount > 0,
+                  badgeCount: _creditCardBadgeCount,
+                  onPressed: () {
                 showDialog(
                   context: context,
                   builder: (_) => PaymentLinkAlert(),
                 );
               }),
-            iconBtn(Icons.settings_suggest, tab: _isReturnJourney ? 39 : 27,
+            iconBtn(Icons.settings_suggest,
+                tab: _isReturnJourney ? 39 : 27,
+                hasBadge: _settingsBadgeCount > 0,
+                badgeCount: _settingsBadgeCount,
                 onPressed: () {
                   showDialog(
                     context: context,
                     builder: (_) => SettingsDialog(),
                   );
                 }),
-            iconBtn(Icons.attach_money, tab: _isReturnJourney ? 40 : 28,
+            iconBtn(Icons.attach_money,
+                tab: _isReturnJourney ? 40 : 28,
+                hasBadge: _childSeatsBadgeCount > 0,
+                badgeCount: _childSeatsBadgeCount,
                 onPressed: () {
                   showDialog(
                     context: context,
                     builder: (_) => ChildSeatsAlert(),
                   );
                 }),
-            iconBtn(Icons.sticky_note_2, tab: _isReturnJourney ? 41 : 29,
+            iconBtn(Icons.sticky_note_2,
+                tab: _isReturnJourney ? 41 : 29,
+                hasBadge: _extraInfoBadgeCount > 0,
+                badgeCount: _extraInfoBadgeCount,
                 onPressed: () {
                   showDialog(
                     context: context,
