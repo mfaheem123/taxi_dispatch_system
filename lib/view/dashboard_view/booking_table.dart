@@ -174,7 +174,31 @@ class _BookingTableState extends State<BookingTable> {
     return [
                           buildHeaderWithSearch(widget: SizedBox(
                             width: 20,
-                            child: Checkbox(value: false, onChanged: (v){
+                            child: Builder(builder: (_) {
+                              final rows = controller.dashboardTableModelData?.data ?? [];
+                              final selected = controller.selectedDeletesItems ?? [];
+                              final count =
+                                  rows.where((r) => selected.contains(r)).length;
+                              final all = rows.isNotEmpty && count == rows.length;
+                              return Checkbox(
+                                tristate: true,
+                                value: all ? true : (count == 0 ? false : null),
+                                onChanged: rows.isEmpty
+                                    ? null
+                                    : (_) {
+                                        setState(() {
+                                          controller.selectedDeletesItems ??= [];
+                                          final sel = controller.selectedDeletesItems!;
+                                          if (all) {
+                                            sel.removeWhere(rows.contains);
+                                          } else {
+                                            for (final r in rows) {
+                                              if (!sel.contains(r)) sel.add(r);
+                                            }
+                                          }
+                                        });
+                                      },
+                              );
                             }),
                           )),
                           buildHeaderWithSearch(title: "TYPE"),

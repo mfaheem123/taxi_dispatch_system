@@ -26,6 +26,13 @@ class DashboardShortcuts extends StatefulWidget {
 
   final Widget child;
 
+  /// True while a dashboard shell is on screen. The app-wide key listener
+  /// (ShellKeyboardController) checks this so its own F2 — "open Create
+  /// Booking in a new tab" — stands down: it fired alongside the dashboard's F2
+  /// and pulled the browser to another tab, so F2 looked dead here.
+  static int _mounted = 0;
+  static bool get isActive => _mounted > 0;
+
   @override
   State<DashboardShortcuts> createState() => _DashboardShortcutsState();
 }
@@ -45,7 +52,14 @@ class _DashboardShortcutsState extends State<DashboardShortcuts> {
       : Get.put(DashboardController());
 
   @override
+  void initState() {
+    super.initState();
+    DashboardShortcuts._mounted++;
+  }
+
+  @override
   void dispose() {
+    DashboardShortcuts._mounted--;
     _focusNode.dispose();
     super.dispose();
   }
@@ -92,20 +106,6 @@ class _DashboardShortcutsState extends State<DashboardShortcuts> {
   }
 
   // ────────── actions
-
-  /// F2 — BOOKING FORM. The F12 toggle can replace the form with the
-  /// full-width booking table, so bring the form back before dropping the
-  /// caret into its first field (PICKUP).
-  void _createBooking() {
-    if (!controller.hideDashBoard.value) {
-      controller.hideDashBoard.value = true;
-      controller.update();
-    }
-    // The form may only be mounted from this frame on.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.focusBookingFormFirstField?.call();
-    });
-  }
 
   /// F12 — HIDE / SHOW DASHBOARD, same action as the header button.
   /// `update()` (not setState) because the dashboard body is rebuilt by a
@@ -162,7 +162,8 @@ class _DashboardShortcutsState extends State<DashboardShortcuts> {
 
     return <ShortcutActivator, VoidCallback>{
       const SingleActivator(LogicalKeyboardKey.f1): baseAddress,
-      const SingleActivator(LogicalKeyboardKey.f2): _guard(_createBooking),
+      // F2 (open Create Booking in a new tab) is handled app-wide by
+      // ShellKeyboardController, so it is deliberately not bound here.
       const SingleActivator(LogicalKeyboardKey.f3): driverVehicle,
       const SingleActivator(LogicalKeyboardKey.keyV, alt: true): driverVehicle,
       const SingleActivator(LogicalKeyboardKey.f4): driverEarning,

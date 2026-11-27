@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 
 import '../../../routes/app_pages.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
+import '../../../utils/open_new_tab_web.dart';
 import 'arrow_scroll_pages.dart';
 
 /// Keyboard and focus behaviour of the shell, kept out of the widget.
@@ -244,9 +245,9 @@ class ShellKeyboardController {
           // scroll karne lagen.
           FocusManager.instance.primaryFocus?.unfocus();
         }
-      } else if (event.logicalKey.keyLabel == "F2") {
-        final newTabUrl = Uri.base.origin + Routes.createBooking;
-        html.window.open(newTabUrl, '_blank');
+      } else if (event.logicalKey == LogicalKeyboardKey.f2) {
+        // Same URL form as the other new-tab pages: hash routing needs "/#".
+        openInNewTab('${Uri.base.origin}/#${Routes.createBooking}');
       }
     }
   }
