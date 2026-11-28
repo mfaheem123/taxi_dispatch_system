@@ -94,7 +94,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<DashboardController>(
-      // The same instance the field above resolved: null on the dashboard (the
+      // The same instance the field above resolved: null on the dashboard (the 
       // permanent controller), the edit screen's own tag underneath it.
       tag: controller.formTag,
       builder: (controller) {
